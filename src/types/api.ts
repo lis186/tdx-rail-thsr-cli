@@ -79,3 +79,25 @@ export interface Operator {
   UpdateTime: string;
   VersionID: number;
 }
+
+export interface THSRSchedule {
+  TrainNumber: string;
+  Direction: number;
+  StartingStationID: string;
+  StartingStationName: StationName;
+  EndingStationID: string;
+  EndingStationName: StationName;
+  ScheduleDate: string;
+  StopTimes: ScheduleStop[];
+  OperatorID: string;
+  UpdateTime: string;
+  VersionID: number;
+}
+
+export interface ScheduleStop {
+  StationID: string;
+  StationName: StationName;
+  ArrivalTime?: string;
+  DepartureTime?: string;
+  StopSequence: number;
+}

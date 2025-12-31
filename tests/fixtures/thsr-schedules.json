@@ -1,0 +1,256 @@
+[
+  {
+    "TrainNumber": "601",
+    "Direction": 0,
+    "StartingStationID": "0990",
+    "StartingStationName": {
+      "Zh_tw": "南港",
+      "En": "Nangang"
+    },
+    "EndingStationID": "1070",
+    "EndingStationName": {
+      "Zh_tw": "左營",
+      "En": "Zuoying"
+    },
+    "ScheduleDate": "2025-12-31",
+    "StopTimes": [
+      {
+        "StationID": "0990",
+        "StationName": {
+          "Zh_tw": "南港",
+          "En": "Nangang"
+        },
+        "DepartureTime": "06:30",
+        "StopSequence": 1
+      },
+      {
+        "StationID": "1000",
+        "StationName": {
+          "Zh_tw": "台北",
+          "En": "Taipei"
+        },
+        "ArrivalTime": "06:37",
+        "DepartureTime": "06:39",
+        "StopSequence": 2
+      },
+      {
+        "StationID": "1010",
+        "StationName": {
+          "Zh_tw": "板橋",
+          "En": "Banqiao"
+        },
+        "ArrivalTime": "06:47",
+        "DepartureTime": "06:49",
+        "StopSequence": 3
+      },
+      {
+        "StationID": "1015",
+        "StationName": {
+          "Zh_tw": "桃園",
+          "En": "Taoyuan"
+        },
+        "ArrivalTime": "06:56",
+        "DepartureTime": "06:58",
+        "StopSequence": 4
+      },
+      {
+        "StationID": "1020",
+        "StationName": {
+          "Zh_tw": "新竹",
+          "En": "Hsinchu"
+        },
+        "ArrivalTime": "07:10",
+        "DepartureTime": "07:12",
+        "StopSequence": 5
+      },
+      {
+        "StationID": "1030",
+        "StationName": {
+          "Zh_tw": "台中",
+          "En": "Taichung"
+        },
+        "ArrivalTime": "07:38",
+        "DepartureTime": "07:40",
+        "StopSequence": 6
+      },
+      {
+        "StationID": "1042",
+        "StationName": {
+          "Zh_tw": "嘉義",
+          "En": "Chiayi"
+        },
+        "ArrivalTime": "08:05",
+        "DepartureTime": "08:07",
+        "StopSequence": 7
+      },
+      {
+        "StationID": "1070",
+        "StationName": {
+          "Zh_tw": "左營",
+          "En": "Zuoying"
+        },
+        "ArrivalTime": "08:44",
+        "StopSequence": 8
+      }
+    ],
+    "OperatorID": "THSR",
+    "UpdateTime": "2025-12-31T00:00:00+08:00",
+    "VersionID": 1
+  },
+  {
+    "TrainNumber": "602",
+    "Direction": 0,
+    "StartingStationID": "0990",
+    "StartingStationName": {
+      "Zh_tw": "南港",
+      "En": "Nangang"
+    },
+    "EndingStationID": "1070",
+    "EndingStationName": {
+      "Zh_tw": "左營",
+      "En": "Zuoying"
+    },
+    "ScheduleDate": "2025-12-31",
+    "StopTimes": [
+      {
+        "StationID": "0990",
+        "StationName": {
+          "Zh_tw": "南港",
+          "En": "Nangang"
+        },
+        "DepartureTime": "07:00",
+        "StopSequence": 1
+      },
+      {
+        "StationID": "1000",
+        "StationName": {
+          "Zh_tw": "台北",
+          "En": "Taipei"
+        },
+        "ArrivalTime": "07:07",
+        "DepartureTime": "07:09",
+        "StopSequence": 2
+      },
+      {
+        "StationID": "1010",
+        "StationName": {
+          "Zh_tw": "板橋",
+          "En": "Banqiao"
+        },
+        "ArrivalTime": "07:17",
+        "DepartureTime": "07:19",
+        "StopSequence": 3
+      },
+      {
+        "StationID": "1030",
+        "StationName": {
+          "Zh_tw": "台中",
+          "En": "Taichung"
+        },
+        "ArrivalTime": "08:08",
+        "DepartureTime": "08:10",
+        "StopSequence": 4
+      },
+      {
+        "StationID": "1070",
+        "StationName": {
+          "Zh_tw": "左營",
+          "En": "Zuoying"
+        },
+        "ArrivalTime": "09:14",
+        "StopSequence": 5
+      }
+    ],
+    "OperatorID": "THSR",
+    "UpdateTime": "2025-12-31T00:00:00+08:00",
+    "VersionID": 1
+  },
+  {
+    "TrainNumber": "701",
+    "Direction": 1,
+    "StartingStationID": "1070",
+    "StartingStationName": {
+      "Zh_tw": "左營",
+      "En": "Zuoying"
+    },
+    "EndingStationID": "0990",
+    "EndingStationName": {
+      "Zh_tw": "南港",
+      "En": "Nangang"
+    },
+    "ScheduleDate": "2025-12-31",
+    "StopTimes": [
+      {
+        "StationID": "1070",
+        "StationName": {
+          "Zh_tw": "左營",
+          "En": "Zuoying"
+        },
+        "DepartureTime": "13:00",
+        "StopSequence": 1
+      },
+      {
+        "StationID": "1042",
+        "StationName": {
+          "Zh_tw": "嘉義",
+          "En": "Chiayi"
+        },
+        "ArrivalTime": "13:37",
+        "DepartureTime": "13:39",
+        "StopSequence": 2
+      },
+      {
+        "StationID": "1030",
+        "StationName": {
+          "Zh_tw": "台中",
+          "En": "Taichung"
+        },
+        "ArrivalTime": "14:04",
+        "DepartureTime": "14:06",
+        "StopSequence": 3
+      },
+      {
+        "StationID": "1020",
+        "StationName": {
+          "Zh_tw": "新竹",
+          "En": "Hsinchu"
+        },
+        "ArrivalTime": "14:32",
+        "DepartureTime": "14:34",
+        "StopSequence": 4
+      },
+      {
+        "StationID": "1010",
+        "StationName": {
+          "Zh_tw": "板橋",
+          "En": "Banqiao"
+        },
+        "ArrivalTime": "14:58",
+        "DepartureTime": "15:00",
+        "StopSequence": 5
+      },
+      {
+        "StationID": "1000",
+        "StationName": {
+          "Zh_tw": "台北",
+          "En": "Taipei"
+        },
+        "ArrivalTime": "15:08",
+        "DepartureTime": "15:10",
+        "StopSequence": 6
+      },
+      {
+        "StationID": "0990",
+        "StationName": {
+          "Zh_tw": "南港",
+          "En": "Nangang"
+        },
+        "ArrivalTime": "15:17",
+        "StopSequence": 7
+      }
+    ],
+    "OperatorID": "THSR",
+    "UpdateTime": "2025-12-31T00:00:00+08:00",
+    "VersionID": 1
+  }
+]
