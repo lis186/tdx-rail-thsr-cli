@@ -1,0 +1,13 @@
+[
+  {
+    "TrainNumber": "602",
+    "Direction": 0,
+    "CurrentStationID": "1020",
+    "CurrentStationName": {"Zh_tw": "新竹", "En": "Hsinchu"},
+    "DelayMinutes": 5,
+    "DelayReason": "路線施工影響",
+    "EstimatedArrivalTime": "14:35",
+    "UpdateTime": "2025-12-31T14:20:00+08:00",
+    "VersionID": 1
+  }
+]

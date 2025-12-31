@@ -101,3 +101,67 @@ export interface ScheduleStop {
   DepartureTime?: string;
   StopSequence: number;
 }
+
+export interface THSRTrainStatus {
+  TrainNumber: string;
+  Direction: number;
+  CurrentStationID: string;
+  CurrentStationName: StationName;
+  Status: string; // 'OnTime', 'Delayed', 'Cancelled', 'NotStarted'
+  DelayMinutes?: number;
+  ScheduledDepartureTime?: string;
+  ActualDepartureTime?: string;
+  NextStationID?: string;
+  NextStationName?: StationName;
+  UpdateTime: string;
+  VersionID: number;
+}
+
+export interface Availability {
+  SeatType: string; // 'Standard', 'Business'
+  TotalSeats: number;
+  AvailableSeats: number;
+  ReservedSeats: number;
+}
+
+export interface THSRAvailability {
+  TrainNumber: string;
+  OriginStationID: string;
+  OriginStationName: StationName;
+  DestinationStationID: string;
+  DestinationStationName: StationName;
+  AvailabilityDate: string;
+  Availabilities: Availability[];
+  UpdateTime: string;
+  VersionID: number;
+}
+
+export interface THSRTrainDelay {
+  TrainNumber: string;
+  Direction: number;
+  CurrentStationID: string;
+  CurrentStationName: StationName;
+  DelayMinutes: number;
+  DelayReason?: string;
+  EstimatedArrivalTime?: string;
+  UpdateTime: string;
+  VersionID: number;
+}
+
+export interface ServiceAlert {
+  AlertType: string; // 'Delay', 'Cancellation', 'Maintenance', 'Other'
+  AffectedLine?: string;
+  AffectedStation?: string;
+  Message: string;
+  Severity: string; // 'Info', 'Warning', 'Critical'
+  StartTime: string;
+  EndTime?: string;
+}
+
+export interface THSRServiceStatus {
+  OverallStatus: string; // 'Normal', 'Warning', 'Critical'
+  LastUpdateTime: string;
+  Alerts: ServiceAlert[];
+  StationStatuses?: Record<string, string>;
+  VersionID: number;
+}

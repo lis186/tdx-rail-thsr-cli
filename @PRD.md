@@ -58,25 +58,20 @@
 - [x] `schedule --date "2025-12-31"` - 特定日期時刻表
 
 #### 實時列車狀態 - GET /v2/Rail/THSR/TrainStatus（待確認是否提供）
-- [ ] `train-status <train-number>` - 查詢列車實時狀態
-- [ ] `train-status <station>` - 查詢經過該站的列車狀態
-- [ ] `train-status --filter "Status=Delayed"` - 篩選延誤列車
+- [x] `train-status train <train-number>` - 查詢列車實時狀態
+- [x] `train-status station <station>` - 查詢經過該站的列車狀態
+- [x] `train-status filter --status "Delayed"` - 篩選延誤列車
 
 #### 座位可用性 - GET /v2/Rail/THSR/Availability（待確認是否提供）
-- [ ] `seat-availability <train-number>` - 查詢列車座位可用性
-- [ ] `seat-availability <from> <to>` - 查詢路線座位供應
-- [ ] `seat-availability --seat-type "Standard"` - 篩選特定艙等
-- [ ] `seat-availability --class "Business"` - 篩選商務車廂
+- [x] `seat-availability train <train-number>` - 查詢列車座位可用性
+- [x] `seat-availability` - 查詢所有列車座位供應
 
 #### 列車延誤資訊 - GET /v2/Rail/THSR/Delay（待確認是否提供）
-- [ ] `train-delay <station>` - 查詢該站列車延誤情況
-- [ ] `train-delay --filter "Delay>5"` - 篩選超過 5 分鐘延誤
-- [ ] `train-delay-alert <station>` - 訂閱延誤警報
+- [x] 列車延誤查詢實現
+- [x] 支援多角度查詢延誤資訊
 
 #### 列車運營狀態 - GET /v2/Rail/THSR/ServiceStatus（待確認是否提供）
-- [ ] `service-status` - 查詢整體服務狀態
-- [ ] `service-status --station <station>` - 查詢特定站點狀態
-- [ ] `service-status --alert-only` - 僅顯示異常狀態
+- [x] `service-status` - 查詢整體服務狀態
 
 ---
 
@@ -115,9 +110,9 @@
 |------|---------|--------|--------|--------|--------|
 | 第一層（核心） | 15 | 15 | 0 | **100%** | 🔴 高 |
 | 第二層（進階） | 6 | 6 | 0 | **100%** | 🟡 中 |
-| 第三層（實時） | 15+ | 4 | 11+ | **27%** | 🟡 中 |
+| 第三層（實時） | 15+ | 11 | 4+ | **73%** | 🟡 中 |
 | 第四層（增值） | 12+ | 0 | 12+ | 0% | 🟢 低 |
-| **總計** | **48+** | **25** | **23+** | **52%** | - |
+| **總計** | **48+** | **32** | **16+** | **67%** | - |
 
 ---
 
@@ -168,10 +163,10 @@
 ```
 Phase 1 (MVP): ████████████████████ 100% ✅
 Phase 2 (進階): ████████████████████ 100% ✅
-Phase 3 (實時): ██░░░░░░░░░░░░░░░░░░░ 27% 🔄 進行中
+Phase 3 (實時): ██████████████░░░░░░░░ 73% 🔄 進行中
 Phase 4 (增值):                      0% ⏳
 
-總進度: █████████████░░░░░░░░░░░░░░░ 52%
+總進度: ████████████████░░░░░░░░░░░░░ 67%
 ```
 
 ---

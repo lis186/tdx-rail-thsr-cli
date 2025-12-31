@@ -1,0 +1,62 @@
+[
+  {
+    "TrainNumber": "601",
+    "OriginStationID": "0990",
+    "OriginStationName": {
+      "Zh_tw": "南港",
+      "En": "Nangang"
+    },
+    "DestinationStationID": "1070",
+    "DestinationStationName": {
+      "Zh_tw": "左營",
+      "En": "Zuoying"
+    },
+    "AvailabilityDate": "2025-12-31",
+    "Availabilities": [
+      {
+        "SeatType": "Standard",
+        "TotalSeats": 384,
+        "AvailableSeats": 156,
+        "ReservedSeats": 228
+      },
+      {
+        "SeatType": "Business",
+        "TotalSeats": 80,
+        "AvailableSeats": 12,
+        "ReservedSeats": 68
+      }
+    ],
+    "UpdateTime": "2025-12-31T06:30:00+08:00",
+    "VersionID": 1
+  },
+  {
+    "TrainNumber": "602",
+    "OriginStationID": "0990",
+    "OriginStationName": {
+      "Zh_tw": "南港",
+      "En": "Nangang"
+    },
+    "DestinationStationID": "1070",
+    "DestinationStationName": {
+      "Zh_tw": "左營",
+      "En": "Zuoying"
+    },
+    "AvailabilityDate": "2025-12-31",
+    "Availabilities": [
+      {
+        "SeatType": "Standard",
+        "TotalSeats": 384,
+        "AvailableSeats": 89,
+        "ReservedSeats": 295
+      },
+      {
+        "SeatType": "Business",
+        "TotalSeats": 80,
+        "AvailableSeats": 5,
+        "ReservedSeats": 75
+      }
+    ],
+    "UpdateTime": "2025-12-31T06:45:00+08:00",
+    "VersionID": 1
+  }
+]

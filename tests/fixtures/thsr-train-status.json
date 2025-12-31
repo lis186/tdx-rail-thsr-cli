@@ -1,0 +1,60 @@
+[
+  {
+    "TrainNumber": "601",
+    "Direction": 0,
+    "CurrentStationID": "1010",
+    "CurrentStationName": {
+      "Zh_tw": "板橋",
+      "En": "Banqiao"
+    },
+    "Status": "OnTime",
+    "ScheduledDepartureTime": "06:49",
+    "ActualDepartureTime": "06:49",
+    "NextStationID": "1015",
+    "NextStationName": {
+      "Zh_tw": "桃園",
+      "En": "Taoyuan"
+    },
+    "UpdateTime": "2025-12-31T06:50:00+08:00",
+    "VersionID": 1
+  },
+  {
+    "TrainNumber": "602",
+    "Direction": 0,
+    "CurrentStationID": "1020",
+    "CurrentStationName": {
+      "Zh_tw": "新竹",
+      "En": "Hsinchu"
+    },
+    "Status": "Delayed",
+    "DelayMinutes": 5,
+    "ScheduledDepartureTime": "07:12",
+    "ActualDepartureTime": "07:17",
+    "NextStationID": "1030",
+    "NextStationName": {
+      "Zh_tw": "台中",
+      "En": "Taichung"
+    },
+    "UpdateTime": "2025-12-31T07:20:00+08:00",
+    "VersionID": 1
+  },
+  {
+    "TrainNumber": "701",
+    "Direction": 1,
+    "CurrentStationID": "1042",
+    "CurrentStationName": {
+      "Zh_tw": "嘉義",
+      "En": "Chiayi"
+    },
+    "Status": "OnTime",
+    "ScheduledDepartureTime": "13:39",
+    "ActualDepartureTime": "13:39",
+    "NextStationID": "1030",
+    "NextStationName": {
+      "Zh_tw": "台中",
+      "En": "Taichung"
+    },
+    "UpdateTime": "2025-12-31T13:45:00+08:00",
+    "VersionID": 1
+  }
+]
