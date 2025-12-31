@@ -1,0 +1,227 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    TEST IMPROVEMENT PRIORITY ANALYSIS                          ║
+║                  Current Coverage: 74.71% | Target: 85%+                       ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+🔴 CRITICAL IMPROVEMENTS (High Impact)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣  JourneyPlanner (64.80% → Target 75%+)
+   ├─ Current:     64.80% statements | 73.46% branches | 87.50% functions
+   ├─ Problem:     Early/latest departure logic untested (lines 157-229)
+   ├─ Impact:      Critical user workflow for journey planning
+   ├─ Tests Needed: 15-20 focused unit tests
+   ├─ Estimated Gain: +10-15% coverage
+   └─ Examples:
+      • Early departure edge cases
+      • Latest arrival optimization
+      • Transfer time constraints (5-180 min)
+      • Date boundary scenarios
+      • Multi-leg path optimization
+
+2️⃣  TransfersResolver (28.26% → Target 45%+)
+   ├─ Current:     28.26% statements | 100% branches | 20% functions
+   ├─ Problem:     Only 20% of functions have direct unit tests
+   ├─ Impact:      Critical for multi-leg journey recommendations
+   ├─ Tests Needed: 20-25 dedicated unit tests
+   ├─ Estimated Gain: +15-20% coverage
+   └─ Examples:
+      • Transfer ranking algorithm
+      • Wait time calculations
+      • Time window filtering
+      • Route optimization
+      • Transfer validation edge cases
+
+3️⃣  CLI Handlers (16.81% → Target 25%+)
+   ├─ Current:     16.81% statements (console.log not counted)
+   ├─ Problem:     Handler logic (console output) not directly tested
+   ├─ Impact:      User-facing functionality
+   ├─ Tests Needed: 30-40 handler mock tests
+   ├─ Estimated Gain: +8-12% coverage
+   └─ Examples:
+      • stations handler: OData logic, search results, info display
+      • fare handler: fare display, list rendering, routes
+      • journey-plan: plan display, earliest/latest logic
+      • All 13 commands need handler testing
+
+🟡 MEDIUM PRIORITY IMPROVEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4️⃣  ConnectionChecker (84.28% → Target 90%+)
+   ├─ Current:     84.28% statements | Missing: 249, 253-254, 260
+   ├─ Tests Needed: 12-15 tests
+   ├─ Estimated Gain: +4-6%
+   └─ Focus: Three-train connections, confidence scoring edge cases
+
+5️⃣  OData Advanced Filtering (92.09% → Target 95%+)
+   ├─ Current:     92.09% statements | Missing: 232-233, 284-285
+   ├─ Tests Needed: 10-12 tests
+   ├─ Estimated Gain: +2-3%
+   └─ Focus: Complex filter combinations, edge cases
+
+6️⃣  AlertsResolver Severity (86.56% → Target 92%+)
+   ├─ Current:     86.56% statements
+   ├─ Tests Needed: 8-10 tests
+   ├─ Estimated Gain: +2-3%
+   └─ Focus: Severity level combinations, filtering edge cases
+
+🟢 LOWER PRIORITY IMPROVEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+7️⃣  OccupancyAnalyzer (91.08% → Target 94%+)
+   ├─ Tests Needed: 6-8 tests
+   ├─ Estimated Gain: +2-3%
+   └─ Focus: Occupancy edge cases, recommendation logic
+
+8️⃣  FareResolver (98.75% → Target 99%+)
+   ├─ Tests Needed: 4-6 tests
+   ├─ Estimated Gain: +0.5-1%
+   └─ Focus: Promotional fares, discounts
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📊 COVERAGE GAP ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Component                   Current    Target    Gap    Tests Needed
+─────────────────────────────────────────────────────────────────────
+JourneyPlanner              64.80%     75%+      10%    15-20 tests
+TransfersResolver           28.26%     45%+      17%    20-25 tests
+CLI Handlers                16.81%     25%+      8%     30-40 tests
+ConnectionChecker           84.28%     90%+      6%     12-15 tests
+OData Filtering             92.09%     95%+      3%     10-12 tests
+AlertsResolver              86.56%     92%+      5%     8-10 tests
+OccupancyAnalyzer           91.08%     94%+      3%     6-8 tests
+FareResolver                98.75%     99%+      1%     4-6 tests
+─────────────────────────────────────────────────────────────────────
+TOTAL                       74.71%     85%+      10%    100-150 tests
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🎯 IMPLEMENTATION ROADMAP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 1: Critical Fixes (1-2 days) [HIGHEST PRIORITY]
+├─ Focus: JourneyPlanner + TransfersResolver
+├─ Tests: 35-45 new tests
+├─ Coverage: 74.71% → 82%+
+├─ Impact: +7-8% absolute gain
+└─ Priority Actions:
+   1. Create journey-planner advanced test suite
+   2. Create transfers-resolver unit tests
+   3. Focus on early/latest departure logic
+   4. Add transfer time constraint tests
+
+PHASE 2: Medium Priority (1 week)
+├─ Focus: CLI Handlers + Advanced Features
+├─ Tests: 50-70 new tests
+├─ Coverage: 82% → 90%+
+├─ Impact: +8% additional gain
+└─ Priority Actions:
+   1. Create CLI handler mock test suite
+   2. Add ConnectionChecker scenarios
+   3. Add OData filtering edge cases
+   4. Enhance AlertsResolver tests
+
+PHASE 3: Polish (1 week)
+├─ Focus: Edge Cases + Final Improvements
+├─ Tests: 15-35 new tests
+├─ Coverage: 90% → 93%+
+├─ Impact: +3% additional gain
+└─ Priority Actions:
+   1. OccupancyAnalyzer edge cases
+   2. FareResolver special pricing
+   3. Final edge case coverage
+   4. Regression test additions
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📈 COVERAGE PROGRESSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Current State:          72.71% ████████████████████░░░░░░░░ (472 tests)
+After Phase 1:          82% ██████████████████████░░░░░░░░ (520+ tests)
+After Phase 2:          90% ██████████████████████████░░░░░ (620+ tests)
+After Phase 3:          93%+ ███████████████████████████████ (730+ tests)
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🎯 TEST IMPACT MATRIX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                    Effort      Impact      Priority    Time
+────────────────────────────────────────────────────────────
+JourneyPlanner      MEDIUM      VERY HIGH   🔴 P1      1 day
+TransfersResolver   MEDIUM      VERY HIGH   🔴 P1      1 day
+CLI Handlers        HIGH        HIGH        🟡 P2      2-3 days
+ConnectionChecker   MEDIUM      MEDIUM      🟡 P2      1 day
+OData Filtering     MEDIUM      MEDIUM      🟡 P2      1 day
+AlertsResolver      MEDIUM      MEDIUM      🟡 P3      1 day
+OccupancyAnalyzer   LOW         MEDIUM      🟢 P3      1 day
+FareResolver        LOW         LOW         🟢 P3      <1 day
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+✅ QUICK START CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase 1 - Critical Improvements:
+ [ ] Create tests/journey-planner-advanced.test.ts
+     - Early/latest departure scenarios (5 tests)
+     - Transfer time constraints (5 tests)
+     - Complex route scenarios (5 tests)
+     - Date/time edge cases (5 tests)
+
+ [ ] Create tests/transfers-resolver.test.ts
+     - Transfer ranking algorithm (5 tests)
+     - Time window validation (4 tests)
+     - Wait time calculation (4 tests)
+     - Route optimization (4 tests)
+     - Edge case handling (4 tests)
+
+ [ ] Create tests/cli-handlers.test.ts (mocked console)
+     - stations handler tests (6 tests)
+     - fare handler tests (6 tests)
+     - journey-plan handler tests (6 tests)
+     - Other command handlers (15+ tests)
+
+Phase 2 - Medium Priority:
+ [ ] Enhance connection-checker.test.ts with advanced scenarios
+ [ ] Enhance odata-utils.test.ts with advanced filters
+ [ ] Enhance alerts-resolver.test.ts with severity combinations
+
+Phase 3 - Polish:
+ [ ] Add occupancy edge cases
+ [ ] Add fare special pricing scenarios
+ [ ] Add performance regression tests
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📝 KEY RECOMMENDATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. START WITH: JourneyPlanner + TransfersResolver
+   → These two components will provide +25% improvement alone
+
+2. USE MOCK STRATEGY: For CLI handlers, mock console.log
+   → Allows testing output formatting and error messages
+
+3. FOCUS ON BRANCHES: Many components have high statement but low branch
+   → Prioritize untested conditional logic
+
+4. LEVERAGE EXISTING: 40+ integration tests exist for TransfersResolver
+   → Direct unit tests will complement existing coverage
+
+5. REGRESSION TESTING: Add tests for any bugs found
+   → Prevents future regressions
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+💾 DOCUMENTATION REFERENCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Detailed Analysis: TEST_IMPROVEMENT_PLAN.md
+Full Coverage Report: TEST_COVERAGE_REPORT.md
+E2E Testing Summary: See tests/e2e.test.ts
+
+═══════════════════════════════════════════════════════════════════════════════════
