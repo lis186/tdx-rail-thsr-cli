@@ -1,9 +1,0 @@
----
-active: true
-iteration: 9
-max_iterations: 50
-completion_promise: null
-started_at: "2025-12-31T16:44:53Z"
----
-
-@PROMPT.md
