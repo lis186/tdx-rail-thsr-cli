@@ -1,11 +1,13 @@
 /**
  * Fare Command
  * Query THSR fares between stations
+ * Supports OData query parameters: $select, $filter, $orderby, $top, $skip
  */
 
 import { Command } from 'commander';
 import Table from 'cli-table3';
 import { FareResolver } from '../lib/fare-resolver.js';
+import type { ODataOptions } from '../lib/odata-utils.js';
 import thsrFares from '../data/fares.js';
 
 export const fareCommand = new Command()
@@ -54,33 +56,73 @@ async function handleFareCommand(from: string, to: string) {
 const listCommand = new Command()
   .name('list')
   .description('列出所有票價')
+  .option('--select <fields>', 'OData $select - 選擇特定字段 (逗號分隔)')
+  .option('--filter <expression>', 'OData $filter - 過濾條件')
+  .option('--orderby <field>', 'OData $orderby - 排序字段')
+  .option('--top <number>', 'OData $top - 返回最多 N 筆記錄')
+  .option('--skip <number>', 'OData $skip - 跳過前 N 筆記錄')
   .action(handleListCommand);
 
-async function handleListCommand() {
+async function handleListCommand(
+  options: {
+    select?: string;
+    filter?: string;
+    orderby?: string;
+    top?: string;
+    skip?: string;
+  }
+) {
   const resolver = new FareResolver(thsrFares);
-  const routes = resolver.listRoutes();
 
-  if (routes.length === 0) {
+  // Build OData options
+  const odataOptions: ODataOptions = {
+    select: options.select,
+    filter: options.filter,
+    orderby: options.orderby,
+    top: options.top ? parseInt(options.top, 10) : undefined,
+    skip: options.skip ? parseInt(options.skip, 10) : undefined,
+  };
+
+  // Get fares with OData options applied
+  const fares = resolver.getAllFaresWithOData(odataOptions);
+
+  if (fares.length === 0) {
     console.log('\n❌ 沒有可用的票價資訊\n');
     return;
   }
 
+  // Determine columns based on select option
+  const columns = options.select
+    ? options.select.split(',').map((f) => f.trim())
+    : ['OriginStationCode', 'DestinationStationCode', 'Price'];
+
   const table = new Table({
-    head: ['出發地', '目的地', '票價資訊'],
+    head: columns,
     style: { head: [], border: ['cyan'] },
   });
 
-  for (const route of routes.slice(0, 20)) {
-    // Limit to first 20 for readability
-    const fare = resolver.getFare(route.fromId, route.toId);
-    const priceStr = fare ? `NT$ ${fare.standardFare}` : 'N/A';
+  for (const fare of fares) {
+    const row: string[] = [];
+    for (const col of columns) {
+      let value: unknown = (fare as Record<string, unknown>)[col];
 
-    table.push([route.from, route.to, priceStr]);
+      // Handle default mapping
+      if (col === 'Price' && !value) {
+        const fares_array = (fare as Record<string, unknown>)['Fares'];
+        if (Array.isArray(fares_array) && fares_array.length > 0) {
+          const firstFare = fares_array[0] as Record<string, unknown>;
+          value = firstFare['Price'];
+        }
+      }
+
+      row.push(String(value ?? '-'));
+    }
+    table.push(row);
   }
 
-  console.log(`\n高鐵票價列表 (顯示前 20 條):\n`);
+  console.log(`\n高鐵票價列表:\n`);
   console.log(table.toString());
-  console.log(`\n共 ${routes.length} 條路線\n`);
+  console.log(`\n共 ${fares.length} 條路線\n`);
 }
 
 // Create routes subcommand

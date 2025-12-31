@@ -1,5 +1,6 @@
 import type { THSRODFare, Fare } from '../types/api.js';
 import { StationResolver } from './station-resolver.js';
+import { applyODataOptions, type ODataOptions } from './odata-utils.js';
 import thsrStations from '../data/stations.js';
 
 export interface FareBreakdown {
@@ -197,5 +198,15 @@ export class FareResolver {
     }
 
     return routes;
+  }
+
+  /**
+   * Get all fares with OData query options
+   * Supports $select, $filter, $orderby, $top, $skip
+   */
+  getAllFaresWithOData(options: ODataOptions): (THSRODFare | Record<string, unknown>)[] {
+    const faresArray = Array.from(this.fares.values());
+    const faresAsRecords = faresArray as unknown as Record<string, unknown>[];
+    return applyODataOptions(faresAsRecords, options) as (THSRODFare | Record<string, unknown>)[];
   }
 }
