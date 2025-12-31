@@ -18,6 +18,8 @@ export const stationsCommand = new Command()
   .option('--orderby <field>', 'OData $orderby - 排序字段')
   .option('--top <number>', 'OData $top - 返回最多 N 筆記錄')
   .option('--skip <number>', 'OData $skip - 跳過前 N 筆記錄')
+  .option('--nearby <coordinates>', '空間查詢 - 查詢指定座標附近的車站 (格式: lat,lon)')
+  .option('--radius <meters>', '空間查詢半徑 (公尺，預設 1000m)')
   .action(handleStationsCommand);
 
 async function handleStationsCommand(
@@ -27,21 +29,47 @@ async function handleStationsCommand(
     orderby?: string;
     top?: string;
     skip?: string;
+    nearby?: string;
+    radius?: string;
   }
 ) {
   const resolver = new StationResolver(thsrStations);
 
-  // Build OData options
-  const odataOptions: ODataOptions = {
-    select: options.select,
-    filter: options.filter,
-    orderby: options.orderby,
-    top: options.top ? parseInt(options.top, 10) : undefined,
-    skip: options.skip ? parseInt(options.skip, 10) : undefined,
-  };
+  let stations: (import('../types/api.js').THSRStation | Record<string, unknown>)[];
 
-  // Get stations with OData options applied
-  const stations = resolver.getAllStationsWithOData(odataOptions);
+  // Handle nearby spatial query
+  if (options.nearby) {
+    const [latStr, lonStr] = options.nearby.split(',');
+    const lat = parseFloat(latStr?.trim() ?? '');
+    const lon = parseFloat(lonStr?.trim() ?? '');
+
+    if (isNaN(lat) || isNaN(lon)) {
+      console.log('\n❌ 座標格式錯誤，請使用 "lat,lon" 格式 (例: 25.0477,121.517)\n');
+      return;
+    }
+
+    const radiusMeters = options.radius ? parseInt(options.radius, 10) : 1000;
+    if (isNaN(radiusMeters) || radiusMeters < 0) {
+      console.log('\n❌ 半徑必須是正數\n');
+      return;
+    }
+
+    // Get nearby stations
+    stations = resolver.getNearbyStations({ lat, lon }, radiusMeters);
+    console.log(`\n查詢座標附近的車站 (${radiusMeters}m 半徑)\n`);
+  } else {
+    // Build OData options
+    const odataOptions: ODataOptions = {
+      select: options.select,
+      filter: options.filter,
+      orderby: options.orderby,
+      top: options.top ? parseInt(options.top, 10) : undefined,
+      skip: options.skip ? parseInt(options.skip, 10) : undefined,
+    };
+
+    // Get stations with OData options applied
+    stations = resolver.getAllStationsWithOData(odataOptions);
+  }
 
   // Determine columns based on select option
   const columns = options.select

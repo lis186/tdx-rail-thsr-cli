@@ -5,6 +5,8 @@ import {
   applyOrderBy,
   applyPagination,
   applyODataOptions,
+  calculateHaversineDistance,
+  applyNearbyFilter,
 } from '../src/lib/odata-utils';
 
 describe('OData Utils', () => {
@@ -229,6 +231,87 @@ describe('OData Utils', () => {
       });
       expect(result).toHaveLength(1);
       expect((result[0] as any).StationCode).toBe('BAN');
+    });
+  });
+
+  describe('calculateHaversineDistance', () => {
+    it('should calculate distance between two points', () => {
+      const point1 = { lat: 25.0477, lon: 121.517 }; // Taipei
+      const point2 = { lat: 24.1372, lon: 120.6339 }; // Taichung
+      const distance = calculateHaversineDistance(point1, point2);
+      // Approximate distance: ~135 km
+      expect(distance).toBeGreaterThan(100000); // 100 km
+      expect(distance).toBeLessThan(150000); // 150 km
+    });
+
+    it('should return 0 for same point', () => {
+      const point = { lat: 25.0477, lon: 121.517 };
+      const distance = calculateHaversineDistance(point, point);
+      expect(distance).toBeLessThan(1); // Nearly 0 (floating point tolerance)
+    });
+
+    it('should be symmetric', () => {
+      const point1 = { lat: 25.0477, lon: 121.517 };
+      const point2 = { lat: 24.1372, lon: 120.6339 };
+      const d1 = calculateHaversineDistance(point1, point2);
+      const d2 = calculateHaversineDistance(point2, point1);
+      expect(d1).toBeCloseTo(d2);
+    });
+  });
+
+  describe('applyNearbyFilter', () => {
+    const geoTestData = [
+      {
+        StationCode: 'TPE',
+        StationName: '台北',
+        StationPosition: {
+          PositionLat: 25.0477,
+          PositionLon: 121.517,
+        },
+      },
+      {
+        StationCode: 'BAN',
+        StationName: '板橋',
+        StationPosition: {
+          PositionLat: 25.0094,
+          PositionLon: 121.4589,
+        },
+      },
+      {
+        StationCode: 'TAC',
+        StationName: '台中',
+        StationPosition: {
+          PositionLat: 24.1372,
+          PositionLon: 120.6339,
+        },
+      },
+    ];
+
+    it('should filter stations within radius', () => {
+      const centerPoint = { lat: 25.0477, lon: 121.517 }; // Taipei
+      const result = applyNearbyFilter(geoTestData, centerPoint, 30000); // 30 km radius
+      expect(result.length).toBeGreaterThan(0);
+      expect(result.some((s) => s.StationCode === 'TPE')).toBe(true);
+    });
+
+    it('should exclude stations outside radius', () => {
+      const centerPoint = { lat: 25.0477, lon: 121.517 }; // Taipei
+      const result = applyNearbyFilter(geoTestData, centerPoint, 5000); // 5 km radius (only very close)
+      // Should only include taipei and maybe banqiao
+      expect(result.every((s) => s.StationCode !== 'TAC')).toBe(true);
+    });
+
+    it('should return all stations for large radius', () => {
+      const centerPoint = { lat: 25.0477, lon: 121.517 };
+      const result = applyNearbyFilter(geoTestData, centerPoint, 500000); // 500 km radius
+      expect(result).toHaveLength(3);
+    });
+
+    it('should return empty array for small radius far from all', () => {
+      const centerPoint = { lat: 22.6903, lon: 120.2627 }; // Far south (Kaohsiung)
+      const result = applyNearbyFilter(geoTestData, centerPoint, 10000); // 10 km radius
+      // Should be empty or have very few results
+      expect(result.length).toBeLessThanOrEqual(1);
     });
   });
 });

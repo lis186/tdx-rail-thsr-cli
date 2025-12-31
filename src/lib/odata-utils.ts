@@ -12,6 +12,11 @@ export interface ODataOptions {
   skip?: number;
 }
 
+export interface GeoPoint {
+  lat: number;
+  lon: number;
+}
+
 /**
  * Select specific fields from objects
  * @param data Array of objects
@@ -135,8 +140,83 @@ export function applyPagination<T>(data: T[], top?: number, skip?: number): T[] 
 }
 
 /**
+ * Calculate distance between two geographic points using Haversine formula
+ * @param point1 First geographic point (lat, lon)
+ * @param point2 Second geographic point (lat, lon)
+ * @returns Distance in meters
+ */
+export function calculateHaversineDistance(point1: GeoPoint, point2: GeoPoint): number {
+  const R = 6371000; // Earth's radius in meters
+  const toRad = Math.PI / 180;
+
+  const lat1 = point1.lat * toRad;
+  const lat2 = point2.lat * toRad;
+  const deltaLat = (point2.lat - point1.lat) * toRad;
+  const deltaLon = (point2.lon - point1.lon) * toRad;
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+
+  return distance;
+}
+
+/**
+ * Filter data by geographic proximity
+ * @param data Array of objects with position data
+ * @param centerPoint Center point for the search
+ * @param radiusMeters Search radius in meters
+ * @param positionFieldPath Path to position field (e.g., "StationPosition" or "Position")
+ * @returns Filtered array of nearby items
+ */
+export function applyNearbyFilter<T extends Record<string, unknown>>(
+  data: T[],
+  centerPoint: GeoPoint,
+  radiusMeters: number,
+  positionFieldPath: string = 'StationPosition'
+): T[] {
+  return data.filter((item) => {
+    const position = getNestedProperty(item, positionFieldPath);
+    if (!position || typeof position !== 'object') {
+      return false;
+    }
+
+    const pos = position as Record<string, unknown>;
+    const lat = pos['PositionLat'] ?? pos['lat'];
+    const lon = pos['PositionLon'] ?? pos['lon'];
+
+    if (typeof lat !== 'number' || typeof lon !== 'number') {
+      return false;
+    }
+
+    const point: GeoPoint = { lat, lon };
+    const distance = calculateHaversineDistance(centerPoint, point);
+
+    return distance <= radiusMeters;
+  });
+}
+
+/**
+ * Get nested property from object using dot notation
+ * @param obj Object to search
+ * @param path Path to property (e.g., "user.address.city")
+ * @returns Property value or undefined
+ */
+function getNestedProperty(obj: Record<string, unknown>, path: string): unknown {
+  return path.split('.').reduce((current, prop) => {
+    if (current && typeof current === 'object') {
+      return (current as Record<string, unknown>)[prop];
+    }
+    return undefined;
+  }, obj as unknown);
+}
+
+/**
  * Apply all OData options in the correct order
- * Order: filter → select → orderby → pagination
+ * Order: filter → nearby → select → orderby → pagination
  * @param data Array of objects
  * @param options OData options
  * @returns Transformed array

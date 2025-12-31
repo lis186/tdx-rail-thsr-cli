@@ -1,5 +1,5 @@
 import type { THSRStation, StationInfo } from '../types/api';
-import { applyODataOptions, type ODataOptions } from './odata-utils';
+import { applyODataOptions, type ODataOptions, applyNearbyFilter, type GeoPoint } from './odata-utils';
 
 /**
  * StationResolver - resolves station names to station data
@@ -164,5 +164,18 @@ export class StationResolver {
   getAllStationsWithOData(options: ODataOptions): (THSRStation | Record<string, unknown>)[] {
     const stationsAsRecords = this.stations as unknown as Record<string, unknown>[];
     return applyODataOptions(stationsAsRecords, options) as (THSRStation | Record<string, unknown>)[];
+  }
+
+  /**
+   * Get stations within a specified radius of a geographic point
+   * Uses Haversine formula for distance calculation
+   * @param centerPoint Center point (lat, lon)
+   * @param radiusMeters Search radius in meters
+   * @returns Array of stations within the radius
+   */
+  getNearbyStations(centerPoint: GeoPoint, radiusMeters: number): THSRStation[] {
+    const stationsAsRecords = this.stations as unknown as Record<string, unknown>[];
+    const filtered = applyNearbyFilter(stationsAsRecords, centerPoint, radiusMeters);
+    return filtered as unknown as THSRStation[];
   }
 }
