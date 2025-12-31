@@ -10,6 +10,7 @@ import { journeyPlanCommand } from './commands/journey-plan.js';
 import { transfersCommand } from './commands/transfers.js';
 import { occupancyCommand } from './commands/occupancy.js';
 import { alertsCommand } from './commands/alerts.js';
+import { connectionsCommand } from './commands/connections.js';
 import { healthCommand } from './commands/health.js';
 
 export const cli = new Command();
@@ -35,6 +36,7 @@ cli.addCommand(seatAvailabilityCommand);
 cli.addCommand(serviceStatusCommand);
 cli.addCommand(occupancyCommand);
 cli.addCommand(alertsCommand);
+cli.addCommand(connectionsCommand);
 cli.addCommand(journeyPlanCommand);
 cli.addCommand(transfersCommand);
 cli.addCommand(healthCommand);
