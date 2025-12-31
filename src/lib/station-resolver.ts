@@ -1,4 +1,5 @@
 import type { THSRStation, StationInfo } from '../types/api';
+import { applyODataOptions, type ODataOptions } from './odata-utils';
 
 /**
  * StationResolver - resolves station names to station data
@@ -7,6 +8,7 @@ import type { THSRStation, StationInfo } from '../types/api';
  * - English names (Taipei, Taichung, etc.)
  * - Station codes (TPE, TAC, etc.)
  * - Fuzzy matching and partial names
+ * - OData query parameters ($select, $filter, $orderby, $top, $skip)
  */
 export class StationResolver {
   private stations: THSRStation[];
@@ -153,5 +155,14 @@ export class StationResolver {
         lat: station.StationPosition.PositionLat,
       },
     };
+  }
+
+  /**
+   * Get all stations with OData query options
+   * Supports $select, $filter, $orderby, $top, $skip
+   */
+  getAllStationsWithOData(options: ODataOptions): (THSRStation | Record<string, unknown>)[] {
+    const stationsAsRecords = this.stations as unknown as Record<string, unknown>[];
+    return applyODataOptions(stationsAsRecords, options) as (THSRStation | Record<string, unknown>)[];
   }
 }

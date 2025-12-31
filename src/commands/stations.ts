@@ -1,34 +1,78 @@
 /**
  * Stations Command
  * Query and display THSR station information
+ * Supports OData query parameters: $select, $filter, $orderby, $top, $skip
  */
 
 import { Command } from 'commander';
 import Table from 'cli-table3';
 import { StationResolver } from '../lib/station-resolver.js';
+import type { ODataOptions } from '../lib/odata-utils.js';
 import thsrStations from '../data/stations.js';
 
 export const stationsCommand = new Command()
   .name('stations')
   .description('查詢高鐵車站資訊')
+  .option('--select <fields>', 'OData $select - 選擇特定字段 (逗號分隔)')
+  .option('--filter <expression>', 'OData $filter - 過濾條件')
+  .option('--orderby <field>', 'OData $orderby - 排序字段')
+  .option('--top <number>', 'OData $top - 返回最多 N 筆記錄')
+  .option('--skip <number>', 'OData $skip - 跳過前 N 筆記錄')
   .action(handleStationsCommand);
 
-async function handleStationsCommand() {
+async function handleStationsCommand(
+  options: {
+    select?: string;
+    filter?: string;
+    orderby?: string;
+    top?: string;
+    skip?: string;
+  }
+) {
   const resolver = new StationResolver(thsrStations);
-  const stations = resolver.getAllStations();
+
+  // Build OData options
+  const odataOptions: ODataOptions = {
+    select: options.select,
+    filter: options.filter,
+    orderby: options.orderby,
+    top: options.top ? parseInt(options.top, 10) : undefined,
+    skip: options.skip ? parseInt(options.skip, 10) : undefined,
+  };
+
+  // Get stations with OData options applied
+  const stations = resolver.getAllStationsWithOData(odataOptions);
+
+  // Determine columns based on select option
+  const columns = options.select
+    ? options.select.split(',').map((f) => f.trim())
+    : ['StationCode', 'StationName', 'City', 'Address'];
 
   const table = new Table({
-    head: ['車站代碼', '車站名稱', '城市', '地址'],
+    head: columns,
     style: { head: [], border: ['cyan'] },
   });
 
   for (const station of stations) {
-    table.push([
-      station.StationCode,
-      station.StationName.Zh_tw,
-      station.LocationCity,
-      station.StationAddress.substring(0, 30) + '...',
-    ]);
+    const row: string[] = [];
+    for (const col of columns) {
+      let value: unknown = (station as Record<string, unknown>)[col];
+
+      // Handle nested properties
+      if (col === 'StationName' && typeof value === 'object' && value !== null) {
+        value = (value as Record<string, unknown>)['Zh_tw'];
+      }
+      if (col === 'City') {
+        value = (station as Record<string, unknown>)['LocationCity'];
+      }
+      if (col === 'Address') {
+        const addr = (station as Record<string, unknown>)['StationAddress'];
+        value = typeof addr === 'string' ? addr.substring(0, 30) + '...' : addr;
+      }
+
+      row.push(String(value ?? '-'));
+    }
+    table.push(row);
   }
 
   console.log('\n高鐵車站列表：\n');
