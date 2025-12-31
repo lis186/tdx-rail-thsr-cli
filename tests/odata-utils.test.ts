@@ -7,6 +7,9 @@ import {
   applyODataOptions,
   calculateHaversineDistance,
   applyNearbyFilter,
+  convertToXML,
+  convertToJSON,
+  applyFormat,
 } from '../src/lib/odata-utils';
 
 describe('OData Utils', () => {
@@ -312,6 +315,125 @@ describe('OData Utils', () => {
       const result = applyNearbyFilter(geoTestData, centerPoint, 10000); // 10 km radius
       // Should be empty or have very few results
       expect(result.length).toBeLessThanOrEqual(1);
+    });
+  });
+
+  describe('convertToJSON', () => {
+    it('should convert object to JSON string', () => {
+      const data = { name: 'test', value: 123 };
+      const result = convertToJSON(data);
+      const parsed = JSON.parse(result);
+      expect(parsed).toEqual(data);
+    });
+
+    it('should handle arrays', () => {
+      const data = [{ name: 'test1' }, { name: 'test2' }];
+      const result = convertToJSON(data);
+      const parsed = JSON.parse(result);
+      expect(parsed).toEqual(data);
+    });
+
+    it('should format with proper indentation', () => {
+      const data = { name: 'test' };
+      const result = convertToJSON(data);
+      expect(result).toContain('  "name"');
+    });
+
+    it('should handle null and undefined values', () => {
+      const data = { name: 'test', value: null };
+      const result = convertToJSON(data);
+      expect(result).toContain('null');
+    });
+  });
+
+  describe('convertToXML', () => {
+    it('should convert object to XML string', () => {
+      const data = { name: 'test', value: '123' };
+      const result = convertToXML(data);
+      expect(result).toContain('<?xml version="1.0"');
+      expect(result).toContain('<root>');
+      expect(result).toContain('<name>test</name>');
+      expect(result).toContain('<value>123</value>');
+      expect(result).toContain('</root>');
+    });
+
+    it('should handle arrays', () => {
+      const data = [{ name: 'test1' }, { name: 'test2' }];
+      const result = convertToXML(data);
+      expect(result).toContain('<?xml version="1.0"');
+      expect(result).toContain('<root>');
+      expect(result).toContain('<item>');
+      expect(result).toContain('<name>test1</name>');
+      expect(result).toContain('<name>test2</name>');
+    });
+
+    it('should escape XML special characters', () => {
+      const data = { text: '<tag>&value"quoted\'apostrophe' };
+      const result = convertToXML(data);
+      expect(result).toContain('&lt;tag&gt;');
+      expect(result).toContain('&amp;value');
+      expect(result).toContain('&quot;quoted');
+      expect(result).toContain('&apos;apostrophe');
+    });
+
+    it('should handle nested objects', () => {
+      const data = { station: { code: 'TPE', name: '台北' } };
+      const result = convertToXML(data);
+      expect(result).toContain('<station>');
+      expect(result).toContain('<code>TPE</code>');
+      expect(result).toContain('<name>台北</name>');
+    });
+
+    it('should handle null values', () => {
+      const data = { name: 'test', value: null };
+      const result = convertToXML(data);
+      expect(result).toContain('<name>test</name>');
+      expect(result).toContain('<value></value>');
+    });
+
+    it('should use custom root element name', () => {
+      const data = { name: 'test' };
+      const result = convertToXML(data, 'custom');
+      expect(result).toContain('<custom>');
+      expect(result).toContain('</custom>');
+    });
+  });
+
+  describe('applyFormat', () => {
+    const testObject = { name: 'test', value: 123 };
+
+    it('should format as JSON by default', () => {
+      const result = applyFormat(testObject);
+      const parsed = JSON.parse(result);
+      expect(parsed).toEqual(testObject);
+    });
+
+    it('should format as JSON when format is json', () => {
+      const result = applyFormat(testObject, 'json');
+      const parsed = JSON.parse(result);
+      expect(parsed).toEqual(testObject);
+    });
+
+    it('should format as XML when format is xml', () => {
+      const result = applyFormat(testObject, 'xml');
+      expect(result).toContain('<?xml version="1.0"');
+      expect(result).toContain('<root>');
+      expect(result).toContain('<name>test</name>');
+    });
+
+    it('should handle arrays in JSON format', () => {
+      const testArray = [{ id: 1 }, { id: 2 }];
+      const result = applyFormat(testArray, 'json');
+      const parsed = JSON.parse(result);
+      expect(parsed).toEqual(testArray);
+    });
+
+    it('should handle arrays in XML format', () => {
+      const testArray = [{ id: '1' }, { id: '2' }];
+      const result = applyFormat(testArray, 'xml');
+      expect(result).toContain('<root>');
+      expect(result).toContain('<item>');
+      expect(result).toContain('<id>1</id>');
     });
   });
 });

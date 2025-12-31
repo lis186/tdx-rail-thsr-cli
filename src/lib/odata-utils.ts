@@ -10,6 +10,7 @@ export interface ODataOptions {
   orderby?: string;
   top?: number;
   skip?: number;
+  format?: 'json' | 'xml';
 }
 
 export interface GeoPoint {
@@ -215,8 +216,77 @@ function getNestedProperty(obj: Record<string, unknown>, path: string): unknown 
 }
 
 /**
+ * Convert object to XML string
+ * @param obj Object to convert
+ * @param rootElement Root XML element name (default: "root")
+ * @returns XML string representation
+ */
+export function convertToXML(obj: unknown, rootElement: string = 'root'): string {
+  function buildXml(value: unknown, elementName: string): string {
+    if (value === null || value === undefined) {
+      return `<${elementName}></${elementName}>`;
+    }
+
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) {
+        return value.map((item) => buildXml(item, 'item')).join('\n');
+      }
+
+      const record = value as Record<string, unknown>;
+      const children = Object.entries(record)
+        .map(([key, val]) => buildXml(val, key))
+        .join('\n');
+      return `<${elementName}>\n${children}\n</${elementName}>`;
+    }
+
+    // Escape XML special characters
+    const escaped = String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+
+    return `<${elementName}>${escaped}</${elementName}>`;
+  }
+
+  const xmlContent = Array.isArray(obj)
+    ? `<${rootElement}>\n${(obj as unknown[]).map((item) => buildXml(item, 'item')).join('\n')}\n</${rootElement}>`
+    : buildXml(obj, rootElement);
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n${xmlContent}`;
+}
+
+/**
+ * Convert object array to JSON string
+ * @param data Data to convert
+ * @returns JSON string representation
+ */
+export function convertToJSON(data: unknown): string {
+  return JSON.stringify(data, null, 2);
+}
+
+/**
+ * Format data according to specified format
+ * @param data Data to format
+ * @param format Output format ('json' or 'xml')
+ * @returns Formatted string
+ */
+export function applyFormat(data: unknown, format?: 'json' | 'xml'): string {
+  if (!format || format === 'json') {
+    return convertToJSON(data);
+  }
+
+  if (format === 'xml') {
+    return convertToXML(data);
+  }
+
+  return convertToJSON(data);
+}
+
+/**
  * Apply all OData options in the correct order
- * Order: filter → nearby → select → orderby → pagination
+ * Order: filter → nearby → select → orderby → pagination → format
  * @param data Array of objects
  * @param options OData options
  * @returns Transformed array
