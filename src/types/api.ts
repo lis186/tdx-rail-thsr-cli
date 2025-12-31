@@ -165,3 +165,35 @@ export interface THSRServiceStatus {
   StationStatuses?: Record<string, string>;
   VersionID: number;
 }
+
+export interface JourneyLeg {
+  legNumber: number;
+  trainNumber: string;
+  fromStation: string;
+  toStation: string;
+  departureTime: string;
+  arrivalTime: string;
+  duration: string;
+  seatAvailable: number;
+}
+
+export interface JourneyPlan {
+  fromStation: string;
+  toStation: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  totalDuration: string;
+  totalLegs: number;
+  legs: JourneyLeg[];
+  transferTime?: number; // minutes
+}
+
+export interface Transfer {
+  fromStation: string;
+  toStation: string;
+  connectingStation: string;
+  departTrain: string;
+  connectTrain: string;
+  transferDuration: number; // minutes
+  feasible: boolean;
+}
