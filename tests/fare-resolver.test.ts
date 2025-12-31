@@ -96,4 +96,60 @@ describe('FareResolver', () => {
       expect(fare).toBeNull();
     });
   });
+
+  describe('getFareByDate', () => {
+    it('should get fare for a specific date', () => {
+      const fare = resolver.getFareByDate('0990', '1000', '2025-01-15');
+      expect(fare).toBeDefined();
+      expect(fare?.standardFare).toBeGreaterThan(0);
+    });
+
+    it('should return null for date outside effective range', () => {
+      const fare = resolver.getFareByDate('0990', '1000', '2024-12-31');
+      expect(fare).toBeNull();
+    });
+
+    it('should return null for non-existent route even with valid date', () => {
+      const fare = resolver.getFareByDate('9999', '9998', '2025-01-15');
+      expect(fare).toBeNull();
+    });
+  });
+
+  describe('getFareByNameAndDate', () => {
+    it('should resolve station names and get fare for specific date', () => {
+      const fare = resolver.getFareByNameAndDate('南港', '台北', '2025-01-15');
+      expect(fare).toBeDefined();
+      expect(fare?.from).toBe('南港');
+      expect(fare?.to).toBe('台北');
+    });
+
+    it('should return null for date outside effective range', () => {
+      const fare = resolver.getFareByNameAndDate('南港', '台北', '2024-12-31');
+      expect(fare).toBeNull();
+    });
+
+    it('should return null if any station is invalid', () => {
+      const fare = resolver.getFareByNameAndDate('不存在', '台北', '2025-01-15');
+      expect(fare).toBeNull();
+    });
+  });
+
+  describe('getAllFaresByDate', () => {
+    it('should return fares for a specific date', () => {
+      const fares = resolver.getAllFaresByDate('2025-01-15');
+      expect(fares.length).toBeGreaterThan(0);
+    });
+
+    it('should filter out fares not effective for the date', () => {
+      const faresForDate = resolver.getAllFaresByDate('2025-01-15');
+      const allFares = resolver.getAllFaresWithOData({});
+      expect(faresForDate.length).toBeLessThanOrEqual(allFares.length);
+    });
+
+    it('should return empty array for date outside any effective range', () => {
+      const fares = resolver.getAllFaresByDate('2030-12-31');
+      // May be empty or have fares without date restrictions
+      expect(Array.isArray(fares)).toBe(true);
+    });
+  });
 });

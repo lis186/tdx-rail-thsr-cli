@@ -79,6 +79,67 @@ export class FareResolver {
   }
 
   /**
+   * Get fare by station IDs and date
+   */
+  getFareByDate(originId: string, destinationId: string, date: string): ResolvedFare | null {
+    const key = `${originId}-${destinationId}`;
+    const fareData = this.fares.get(key);
+
+    if (!fareData) {
+      return null;
+    }
+
+    // Check if date is within effective/expiry date range
+    if (fareData.EffectiveDate && fareData.ExpiryDate) {
+      if (date < fareData.EffectiveDate || date > fareData.ExpiryDate) {
+        return null;
+      }
+    }
+
+    // Find standard fare (usually the first with lowest price)
+    const standardFare = this.findStandardFare(fareData.Fares);
+
+    return {
+      from: fareData.OriginStationName.Zh_tw,
+      to: fareData.DestinationStationName.Zh_tw,
+      standardFare: standardFare,
+      fareBreakdown: this.parseFareBreakdown(fareData.Fares),
+      direction: fareData.Direction,
+    };
+  }
+
+  /**
+   * Get fare by station names and date
+   */
+  getFareByNameAndDate(
+    originName: string,
+    destinationName: string,
+    date: string
+  ): ResolvedFare | null {
+    const originStation = this.stationResolver.resolveStation(originName);
+    const destStation = this.stationResolver.resolveStation(destinationName);
+
+    if (!originStation || !destStation) {
+      return null;
+    }
+
+    return this.getFareByDate(originStation.StationID, destStation.StationID, date);
+  }
+
+  /**
+   * Get all fares for a specific date
+   */
+  getAllFaresByDate(date: string): THSRODFare[] {
+    return Array.from(this.fares.values()).filter((fareData) => {
+      if (!fareData.EffectiveDate || !fareData.ExpiryDate) {
+        // Include fares without date restrictions
+        return true;
+      }
+      return date >= fareData.EffectiveDate && date <= fareData.ExpiryDate;
+    });
+  }
+
+  /**
    * Find the standard/lowest fare price
    */
   private findStandardFare(fares: Fare[]): number {

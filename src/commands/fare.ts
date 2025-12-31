@@ -15,20 +15,40 @@ export const fareCommand = new Command()
   .description('查詢高鐵票價')
   .argument('<from>', '出發站')
   .argument('<to>', '目的地站')
+  .option('--date <date>', '查詢特定日期的票價 (格式: YYYY-MM-DD)')
   .action(handleFareCommand);
 
-async function handleFareCommand(from: string, to: string) {
+async function handleFareCommand(
+  from: string,
+  to: string,
+  options: { date?: string }
+) {
   const resolver = new FareResolver(thsrFares);
-  const fare = resolver.getFareByName(from, to);
+  let fare;
+
+  if (options.date) {
+    // Validate date format
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(options.date)) {
+      console.log(`\n❌ 日期格式錯誤，請使用 YYYY-MM-DD 格式\n`);
+      return;
+    }
+    fare = resolver.getFareByNameAndDate(from, to, options.date);
+  } else {
+    fare = resolver.getFareByName(from, to);
+  }
 
   if (!fare) {
-    console.log(`\n❌ 找不到從 "${from}" 到 "${to}" 的票價資訊\n`);
+    const dateStr = options.date ? ` (${options.date})` : '';
+    console.log(`\n❌ 找不到從 "${from}" 到 "${to}" 的票價資訊${dateStr}\n`);
     return;
   }
 
   console.log(`\n🎫 票價查詢`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   console.log(`路線: ${fare.from} → ${fare.to}`);
+  if (options.date) {
+    console.log(`日期: ${options.date}`);
+  }
   console.log(`標準票價: NT$ ${fare.standardFare}`);
   console.log();
 

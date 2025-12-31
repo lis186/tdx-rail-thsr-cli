@@ -44,6 +44,8 @@ export interface THSRODFare {
   DestinationStationName: StationName;
   Direction: number;
   Fares: Fare[];
+  EffectiveDate?: string;
+  ExpiryDate?: string;
 }
 
 export interface StationInfo {
