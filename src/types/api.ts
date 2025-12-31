@@ -67,3 +67,13 @@ export interface FareInfo {
     studentDiscount?: number;
   };
 }
+
+export interface Operator {
+  OperatorID: string;
+  OperatorCode: string;
+  OperatorName: StationName;
+  OperatorPhone?: string;
+  OperatorWebsiteUrl?: string;
+  UpdateTime: string;
+  VersionID: number;
+}

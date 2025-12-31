@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { stationsCommand } from './commands/stations.js';
 import { fareCommand } from './commands/fare.js';
+import { operatorCommand } from './commands/operator.js';
 import { healthCommand } from './commands/health.js';
 
 export const cli = new Command();
@@ -19,6 +20,7 @@ cli
 // Register commands
 cli.addCommand(stationsCommand);
 cli.addCommand(fareCommand);
+cli.addCommand(operatorCommand);
 cli.addCommand(healthCommand);
 
 // Add help
