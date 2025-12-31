@@ -14,11 +14,11 @@
 - [x] `stations` - 列出所有車站
 - [x] `stations search <query>` - 搜尋車站（模糊匹配）
 - [x] `stations info <station>` - 顯示車站詳細資訊
-- [ ] `stations --filter "City=台北市"` - OData $filter 過濾
-- [ ] `stations --select "StationCode,Name"` - OData $select 欄位選擇
-- [ ] `stations --orderby "Name"` - OData $orderby 排序
-- [ ] `stations --limit 10 --skip 5` - OData 分頁查詢
-- [ ] `stations --nearby "25.0477,121.5170" --radius 1000` - 空間查詢
+- [x] `stations --filter "City=台北市"` - OData $filter 過濾
+- [x] `stations --select "StationCode,Name"` - OData $select 欄位選擇
+- [x] `stations --orderby "Name"` - OData $orderby 排序
+- [x] `stations --top 10 --skip 5` - OData 分頁查詢 ($top/$skip)
+- [ ] `stations --nearby "25.0477,121.5170" --radius 1000` - 空間查詢 (Haversine 公式)
 
 #### 2. 票價資訊 - GET /v2/Rail/THSR/ODFare
 - [x] `fare <from> <to>` - 查詢兩站票價
@@ -40,10 +40,10 @@
 ### 🔷 第二層：進階查詢功能（OData 標準功能）
 
 #### OData 查詢參數實現
-- [ ] $select - 欄位選擇（支援所有端點）
-- [ ] $filter - 進階過濾（支援所有端點）
-- [ ] $orderby - 結果排序（支援所有端點）
-- [ ] $top / $skip - 分頁查詢（支援所有端點）
+- [x] $select - 欄位選擇（stations 端點已支援）
+- [x] $filter - 進階過濾（stations 端點已支援）
+- [x] $orderby - 結果排序（stations 端點已支援）
+- [x] $top / $skip - 分頁查詢（stations 端點已支援）
 - [ ] $format - 響應格式控制（JSON/XML）
 - [ ] 空間查詢 nearby() - 1000m 範圍內搜尋
 
@@ -113,11 +113,11 @@
 
 | 層級 | 功能數量 | 已實現 | 未實現 | 覆蓋率 | 優先度 |
 |------|---------|--------|--------|--------|--------|
-| 第一層（核心） | 11 | 3 | 8 | 27% | 🔴 高 |
-| 第二層（進階） | 6 | 0 | 6 | 0% | 🟡 中 |
+| 第一層（核心） | 11 | 7 | 4 | **64%** | 🔴 高 |
+| 第二層（進階） | 6 | 4 | 2 | **67%** | 🟡 中 |
 | 第三層（實時） | 15+ | 0 | 15+ | 0% | 🟡 中 |
 | 第四層（增值） | 12+ | 0 | 12+ | 0% | 🟢 低 |
-| **總計** | **44+** | **3** | **41+** | **7%** | - |
+| **總計** | **44+** | **11** | **33+** | **25%** | - |
 
 ---
 
@@ -167,11 +167,11 @@
 
 ```
 Phase 1 (MVP): ████████████████████ 100% ✅
-Phase 2 (進階):                      0% ⏳
+Phase 2 (進階): ███████░░░░░░░░░░░░░░  65% 🔄 進行中
 Phase 3 (實時):                      0% ⏳
 Phase 4 (增值):                      0% ⏳
 
-總進度: ███░░░░░░░░░░░░░░░░░░░░░░ 7%
+總進度: █████░░░░░░░░░░░░░░░░░░░░░░ 25%
 ```
 
 ---
