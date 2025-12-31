@@ -24,10 +24,10 @@
 - [x] `fare <from> <to>` - 查詢兩站票價
 - [x] `fare list` - 列出所有票價路線
 - [x] `fare routes <station>` - 顯示指定車站的路線（出發和到達）
-- [ ] `fare --filter "DiscountType=1"` - OData $filter 過濾
-- [ ] `fare --select "OriginStationCode,DestinationStationCode,Price"` - OData $select 欄位選擇
-- [ ] `fare --orderby "Price"` - OData $orderby 排序
-- [ ] `fare list --limit 20 --skip 10` - OData 分頁查詢
+- [x] `fare list --filter "OriginStationCode=TPE"` - OData $filter 過濾
+- [x] `fare list --select "OriginStationCode,DestinationStationCode,Price"` - OData $select 欄位選擇
+- [x] `fare list --orderby "Price"` - OData $orderby 排序
+- [x] `fare list --top 20 --skip 10` - OData 分頁查詢 ($top/$skip)
 - [ ] `fare --date "2025-12-31"` - 特定日期票價查詢
 
 #### 3. 營運業者資訊 - GET /v2/Rail/Operator
@@ -113,11 +113,11 @@
 
 | 層級 | 功能數量 | 已實現 | 未實現 | 覆蓋率 | 優先度 |
 |------|---------|--------|--------|--------|--------|
-| 第一層（核心） | 11 | 7 | 4 | **64%** | 🔴 高 |
+| 第一層（核心） | 11 | 10 | 1 | **91%** | 🔴 高 |
 | 第二層（進階） | 6 | 4 | 2 | **67%** | 🟡 中 |
 | 第三層（實時） | 15+ | 0 | 15+ | 0% | 🟡 中 |
 | 第四層（增值） | 12+ | 0 | 12+ | 0% | 🟢 低 |
-| **總計** | **44+** | **11** | **33+** | **25%** | - |
+| **總計** | **44+** | **14** | **30+** | **32%** | - |
 
 ---
 
@@ -167,11 +167,11 @@
 
 ```
 Phase 1 (MVP): ████████████████████ 100% ✅
-Phase 2 (進階): ███████░░░░░░░░░░░░░░  65% 🔄 進行中
+Phase 2 (進階): ████████████░░░░░░░░░░ 68% 🔄 進行中
 Phase 3 (實時):                      0% ⏳
 Phase 4 (增值):                      0% ⏳
 
-總進度: █████░░░░░░░░░░░░░░░░░░░░░░ 25%
+總進度: ██████░░░░░░░░░░░░░░░░░░░░░░ 32%
 ```
 
 ---
