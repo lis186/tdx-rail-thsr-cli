@@ -1,5 +1,5 @@
-import type { Operator } from '../types/api';
-import { applyODataOptions, type ODataOptions } from './odata-utils';
+import type { Operator } from '../types/api.js';
+import { applyODataOptions, type ODataOptions } from './odata-utils.js';
 
 /**
  * OperatorResolver - resolves rail operators

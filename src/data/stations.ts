@@ -1,4 +1,4 @@
-import type { THSRStation } from '../types/api';
+import type { THSRStation } from '../types/api.js';
 
 // Import stations from JSON data
 const stationsData = [

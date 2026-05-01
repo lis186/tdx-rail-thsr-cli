@@ -1,5 +1,5 @@
-import type { THSRStation, StationInfo } from '../types/api';
-import { applyODataOptions, type ODataOptions, applyNearbyFilter, type GeoPoint } from './odata-utils';
+import type { THSRStation, StationInfo } from '../types/api.js';
+import { applyODataOptions, type ODataOptions, applyNearbyFilter, type GeoPoint } from './odata-utils.js';
 
 /**
  * StationResolver - resolves station names to station data

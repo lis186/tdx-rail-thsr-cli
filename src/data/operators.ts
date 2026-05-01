@@ -1,4 +1,4 @@
-import type { Operator } from '../types/api';
+import type { Operator } from '../types/api.js';
 
 /**
  * Taiwan Rail Operators Data
