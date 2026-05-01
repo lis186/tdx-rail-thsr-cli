@@ -143,31 +143,30 @@ async function handleOccupancyCommand(
   }
 }
 
-// Create subcommand for recommendations
+// Create subcommand for recommendations — `--date` is parent-only; subcommand
+// reads it via optsWithGlobals() to avoid commander v12's same-name shadowing.
 const recommendCommand = new Command()
   .name('recommend')
   .description('推薦有位列車')
   .argument('<from>', '出發站')
   .argument('<to>', '目的地站')
-  .option('--date <date>', '查詢日期 (格式: YYYY-MM-DD)', new Date().toISOString().split('T')[0])
   .action(handleRecommendCommand);
 
 async function handleRecommendCommand(
   from: string,
   to: string,
-  options: {
-    date: string;
-  }
+  _options: Record<string, unknown>,
+  command: Command,
 ) {
   const analyzer = new OccupancyAnalyzer();
+  const date = command.optsWithGlobals().date as string;
 
-  // Validate date format
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(options.date)) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     console.log('\n❌ 日期格式錯誤，請使用 YYYY-MM-DD 格式\n');
     return;
   }
 
-  const recommended = analyzer.getRecommendedTrains(from, to, options.date);
+  const recommended = analyzer.getRecommendedTrains(from, to, date);
 
   if (!recommended || recommended.length === 0) {
     console.log(
@@ -179,7 +178,7 @@ async function handleRecommendCommand(
   console.log('\n✨ 推薦列車');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`路線: ${from} → ${to}`);
-  console.log(`日期: ${options.date}`);
+  console.log(`日期: ${date}`);
   console.log(`共 ${recommended.length} 班推薦列車\n`);
 
   const table = new Table({

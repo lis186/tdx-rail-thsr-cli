@@ -234,22 +234,34 @@ describe('E2E CLI subprocess', () => {
     }, PER_TEST_TIMEOUT);
   });
 
-  // ─── known issue documentation ───────────────────────────────
-  describe('known issues', () => {
-    // Documents the commander v12 quirk: when a parent and a subcommand both
-    // declare the same `--date` option, the parent consumes the value and the
-    // subcommand keeps its default. The subcommand handler's date validation
-    // is therefore unreachable through the real CLI today. This test pins the
-    // current behaviour so a regression (or an upstream fix that makes the
-    // validation reachable) shows up clearly.
-    it('parent --date shadows subcommand --date for transfers best', async () => {
+  // ─── --date plumbing across parent + subcommand ──────────────
+  describe('--date inheritance', () => {
+    // Subcommands no longer redeclare `--date`; they read parent's value via
+    // optsWithGlobals(). This test guards against a regression where the
+    // commander v12 same-name shadowing returns (parent eats the flag, child
+    // silently uses its default).
+    it('transfers best surfaces date validation error from a bad --date', async () => {
       const { stdout, exitCode } = await runCli([
         'transfers', 'best', '南港', '台中', '--date', 'not-a-date',
       ]);
-      // Today: command runs to completion using the default date instead of
-      // rejecting "not-a-date". exit 0 + no "日期格式錯誤" anywhere.
       expect(exitCode).toBe(0);
-      expect(stdout).not.toContain('日期格式錯誤');
+      expect(stdout).toContain('日期格式錯誤');
+    }, PER_TEST_TIMEOUT);
+
+    it('connections find surfaces date validation error from a bad --date', async () => {
+      const { stdout, exitCode } = await runCli([
+        'connections', 'find', '南港', '左營', '台中', '--date', '2025/12/31',
+      ]);
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain('日期格式錯誤');
+    }, PER_TEST_TIMEOUT);
+
+    it('occupancy recommend surfaces date validation error from a bad --date', async () => {
+      const { stdout, exitCode } = await runCli([
+        'occupancy', 'recommend', '南港', '左營', '--date', 'bad',
+      ]);
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain('日期格式錯誤');
     }, PER_TEST_TIMEOUT);
   });
 });

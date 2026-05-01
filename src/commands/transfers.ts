@@ -100,12 +100,16 @@ async function handleTransfersCommand(
 }
 
 // Create subcommand for best transfer
+//
+// `--date` lives only on the parent transfersCommand. Subcommands read it via
+// optsWithGlobals() so the value isn't shadowed by a same-named local option
+// (commander v12 lets the parent consume the flag before subcommand routing,
+// leaving a duplicate subcommand option permanently on its default).
 const bestCommand = new Command()
   .name('best')
   .description('最佳轉運選項')
   .argument('<from>', '出發站')
   .argument('<to>', '目的地站')
-  .option('--date <date>', '旅程日期 (格式: YYYY-MM-DD)', new Date().toISOString().split('T')[0])
   .option('--prefer-short-wait', '優先選擇短轉運時間', false)
   .action(handleBestTransferCommand);
 
@@ -113,19 +117,19 @@ async function handleBestTransferCommand(
   from: string,
   to: string,
   options: {
-    date: string;
     'prefer-short-wait'?: boolean;
-  }
+  },
+  command: Command,
 ) {
   const resolver = new TransfersResolver();
+  const date = command.optsWithGlobals().date as string;
 
-  // Validate date format
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(options.date)) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     console.log('\n❌ 日期格式錯誤，請使用 YYYY-MM-DD 格式\n');
     return;
   }
 
-  const bestTransfer = resolver.findBestTransfer(from, to, options.date, options['prefer-short-wait']);
+  const bestTransfer = resolver.findBestTransfer(from, to, date, options['prefer-short-wait']);
 
   if (!bestTransfer) {
     console.log(`\n❌ 找不到從 \"${from}\" 到 \"${to}\" 的轉運選項\n`);
@@ -136,7 +140,7 @@ async function handleBestTransferCommand(
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`路線: ${bestTransfer.fromStation} → ${bestTransfer.toStation}`);
   console.log(`轉運站: ${bestTransfer.connectingStation}`);
-  console.log(`日期: ${options.date}\n`);
+  console.log(`日期: ${date}\n`);
 
   console.log('第一段列車:');
   console.log(`  列車號: ${bestTransfer.departTrain}`);
@@ -152,13 +156,13 @@ async function handleBestTransferCommand(
   console.log(`  全程耗時: ${resolver.formatDuration(bestTransfer.totalDuration)}\n`);
 }
 
-// Create subcommand for comparing transfers
+// Create subcommand for comparing transfers — see `bestCommand` for why
+// `--date` is parent-only.
 const compareCommand = new Command()
   .name('compare')
   .description('比較轉運選項')
   .argument('<from>', '出發站')
   .argument('<to>', '目的地站')
-  .option('--date <date>', '旅程日期 (格式: YYYY-MM-DD)', new Date().toISOString().split('T')[0])
   .option('--limit <count>', '顯示轉運選項數量', '10')
   .action(handleCompareTransfersCommand);
 
@@ -166,20 +170,20 @@ async function handleCompareTransfersCommand(
   from: string,
   to: string,
   options: {
-    date: string;
     limit?: string;
-  }
+  },
+  command: Command,
 ) {
   const resolver = new TransfersResolver();
+  const date = command.optsWithGlobals().date as string;
 
-  // Validate date format
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(options.date)) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     console.log('\n❌ 日期格式錯誤，請使用 YYYY-MM-DD 格式\n');
     return;
   }
 
   const limit = parseInt(options.limit || '10', 10);
-  const transfers = resolver.findTransfers(from, to, options.date);
+  const transfers = resolver.findTransfers(from, to, date);
 
   if (!transfers || transfers.length === 0) {
     console.log(`\n❌ 找不到從 \"${from}\" 到 \"${to}\" 的轉運選項\n`);
@@ -189,7 +193,7 @@ async function handleCompareTransfersCommand(
   console.log('\n📊 轉運選項比較');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`路線: ${transfers[0].fromStation} → ${transfers[0].toStation}`);
-  console.log(`日期: ${options.date}`);
+  console.log(`日期: ${date}`);
   console.log(`共找到 ${transfers.length} 個選項 (顯示前 ${Math.min(limit, transfers.length)} 個)\n`);
 
   const table = new Table({
