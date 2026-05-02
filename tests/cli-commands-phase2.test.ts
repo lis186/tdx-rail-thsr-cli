@@ -1,6 +1,6 @@
 /**
  * CLI Commands Phase 2 - Driven via commander parseAsync
- * Covers: transfers, occupancy, alerts, connections, operator
+ * Covers: transfers, occupancy, alerts
  *
  * Each test uses dynamic import + vi.resetModules() to get a fresh Command
  * instance, since commander stores option state on the singleton across parses.
@@ -31,8 +31,6 @@ async function loadCommand(modulePath: string, exportName: string): Promise<Comm
 const transfers = () => loadCommand('../src/commands/transfers', 'transfersCommand');
 const occupancy = () => loadCommand('../src/commands/occupancy', 'occupancyCommand');
 const alerts = () => loadCommand('../src/commands/alerts', 'alertsCommand');
-const connections = () => loadCommand('../src/commands/connections', 'connectionsCommand');
-const operator = () => loadCommand('../src/commands/operator', 'operatorCommand');
 
 describe('CLI Commands Phase 2 (parseAsync)', () => {
   let logSpy: ReturnType<typeof vi.spyOn>;
@@ -234,75 +232,4 @@ describe('CLI Commands Phase 2 (parseAsync)', () => {
     });
   });
 
-  // ─── connections ─────────────────────────────────────────────
-  describe('connections', () => {
-    it('rejects bad date', async () => {
-      const cmd = await connections();
-      await cmd.parseAsync(fullArgv('601', '602', '台中', '--date', 'bad'));
-      expect(joinOut(logSpy)).toContain('日期格式錯誤');
-    });
-
-    it('runs check between two trains', async () => {
-      const cmd = await connections();
-      await cmd.parseAsync(fullArgv('601', '701', '左營', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toMatch(/列車連接可行性檢查|無法找到列車/);
-    });
-
-    it('reports unknown train pair', async () => {
-      const cmd = await connections();
-      await cmd.parseAsync(fullArgv('99999', '88888', '台中', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toContain('無法找到列車');
-    });
-
-    it('find subcommand runs', async () => {
-      const cmd = await connections();
-      await cmd.parseAsync(fullArgv('find', '南港', '左營', '台中', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toContain('可行的轉運組合');
-    });
-
-    it('find subcommand honors --min-confidence', async () => {
-      const cmd = await connections();
-      await cmd.parseAsync(fullArgv('find', '南港', '左營', '台中', '--date', FIXTURE_DATE, '--min-confidence', '80'));
-      expect(joinOut(logSpy)).toContain('可行的轉運組合');
-    });
-
-    it('quick subcommand runs', async () => {
-      const cmd = await connections();
-      await cmd.parseAsync(fullArgv('quick', '601', '701', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toContain('快速連接檢查');
-    });
-  });
-
-  // ─── operator ────────────────────────────────────────────────
-  describe('operator', () => {
-    it('default action lists operators', async () => {
-      const cmd = await operator();
-      await cmd.parseAsync(fullArgv());
-      expect(joinOut(logSpy)).toMatch(/軌道營運業者列表|沒有可用的營運業者資訊/);
-    });
-
-    it('list subcommand prints all operators', async () => {
-      const cmd = await operator();
-      await cmd.parseAsync(fullArgv('list'));
-      expect(joinOut(logSpy)).toMatch(/軌道營運業者列表|沒有符合條件/);
-    });
-
-    it('list subcommand respects --top', async () => {
-      const cmd = await operator();
-      await cmd.parseAsync(fullArgv('list', '--top', '1'));
-      expect(joinOut(logSpy)).toMatch(/軌道營運業者列表|沒有符合條件/);
-    });
-
-    it('list subcommand respects --select', async () => {
-      const cmd = await operator();
-      await cmd.parseAsync(fullArgv('list', '--select', 'OperatorID,OperatorName'));
-      expect(joinOut(logSpy)).toContain('OperatorID');
-    });
-
-    it('info subcommand reports unknown operator', async () => {
-      const cmd = await operator();
-      await cmd.parseAsync(fullArgv('info', 'NOSUCH'));
-      expect(joinOut(logSpy)).toContain('找不到營運業者');
-    });
-  });
 });

@@ -1,6 +1,6 @@
 /**
  * CLI Commands Phase 3 - Driven via commander parseAsync
- * Covers: seat-availability, service-status, health
+ * Covers: seat-availability, health
  *
  * health is special: it hits TDX API and calls process.exit().
  * We mock both the API client and the ConfigService, and intercept process.exit.
@@ -81,19 +81,6 @@ describe('CLI Commands Phase 3 (parseAsync)', () => {
       const cmd = await loadCommand('../src/commands/seat-availability', 'seatAvailabilityCommand');
       await cmd.parseAsync(fullArgv('train', '99999'));
       expect(joinOut(logSpy)).toContain('找不到列車');
-    });
-  });
-
-  // ─── service-status ──────────────────────────────────────────
-  describe('service-status', () => {
-    it('prints overall status and notices', async () => {
-      const cmd = await loadCommand('../src/commands/service-status', 'serviceStatusCommand');
-      await cmd.parseAsync(fullArgv());
-      const out = joinOut(logSpy);
-      expect(out).toContain('高鐵服務狀態');
-      expect(out).toContain('整體狀態');
-      expect(out).toContain('正常運行');
-      expect(out).toMatch(/重要通知|目前沒有重要通知/);
     });
   });
 

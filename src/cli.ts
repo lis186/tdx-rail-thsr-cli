@@ -1,16 +1,12 @@
 import { Command } from 'commander';
 import { stationsCommand } from './commands/stations.js';
 import { fareCommand } from './commands/fare.js';
-import { operatorCommand } from './commands/operator.js';
 import { scheduleCommand } from './commands/schedule.js';
-import { trainStatusCommand } from './commands/train-status.js';
 import { seatAvailabilityCommand } from './commands/seat-availability.js';
-import { serviceStatusCommand } from './commands/service-status.js';
 import { journeyPlanCommand } from './commands/journey-plan.js';
 import { transfersCommand } from './commands/transfers.js';
 import { occupancyCommand } from './commands/occupancy.js';
 import { alertsCommand } from './commands/alerts.js';
-import { connectionsCommand } from './commands/connections.js';
 import { healthCommand } from './commands/health.js';
 
 export const cli = new Command();
@@ -29,14 +25,10 @@ cli
 // Register commands
 cli.addCommand(stationsCommand);
 cli.addCommand(fareCommand);
-cli.addCommand(operatorCommand);
 cli.addCommand(scheduleCommand);
-cli.addCommand(trainStatusCommand);
 cli.addCommand(seatAvailabilityCommand);
-cli.addCommand(serviceStatusCommand);
 cli.addCommand(occupancyCommand);
 cli.addCommand(alertsCommand);
-cli.addCommand(connectionsCommand);
 cli.addCommand(journeyPlanCommand);
 cli.addCommand(transfersCommand);
 cli.addCommand(healthCommand);

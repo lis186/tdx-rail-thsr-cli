@@ -137,12 +137,6 @@ describe('E2E CLI subprocess', () => {
       expect(stdout).toContain('601');
     }, PER_TEST_TIMEOUT);
 
-    it('train-status train 601', async () => {
-      const { stdout, exitCode } = await runCli(['train-status', 'train', '601']);
-      expect(exitCode).toBe(0);
-      expect(stdout).toContain('601');
-    }, PER_TEST_TIMEOUT);
-
     it('journey-plan 南港 左營', async () => {
       const { stdout, exitCode } = await runCli(['journey-plan', '南港', '左營', '--date', '2025-12-31']);
       expect(exitCode).toBe(0);
@@ -153,12 +147,6 @@ describe('E2E CLI subprocess', () => {
       const { stdout, exitCode } = await runCli(['seat-availability']);
       expect(exitCode).toBe(0);
       expect(stdout).toMatch(/座位可用性|沒有座位可用性資訊/);
-    }, PER_TEST_TIMEOUT);
-
-    it('service-status', async () => {
-      const { stdout, exitCode } = await runCli(['service-status']);
-      expect(exitCode).toBe(0);
-      expect(stdout).toContain('高鐵服務狀態');
     }, PER_TEST_TIMEOUT);
 
     it('occupancy --date', async () => {
@@ -185,17 +173,6 @@ describe('E2E CLI subprocess', () => {
       expect(stdout).toMatch(/轉運選項|找不到從/);
     }, PER_TEST_TIMEOUT);
 
-    it('connections 601 701 左營', async () => {
-      const { stdout, exitCode } = await runCli(['connections', '601', '701', '左營', '--date', '2025-12-31']);
-      expect(exitCode).toBe(0);
-      expect(stdout).toMatch(/列車連接可行性檢查|無法找到列車/);
-    }, PER_TEST_TIMEOUT);
-
-    it('operator default', async () => {
-      const { stdout, exitCode } = await runCli(['operator']);
-      expect(exitCode).toBe(0);
-      expect(stdout).toMatch(/軌道營運業者列表|沒有可用的營運業者資訊/);
-    }, PER_TEST_TIMEOUT);
   });
 
   // ─── live API: health hits real TDX with shared .env ─────────
@@ -243,14 +220,6 @@ describe('E2E CLI subprocess', () => {
     it('transfers best surfaces date validation error from a bad --date', async () => {
       const { stdout, exitCode } = await runCli([
         'transfers', 'best', '南港', '台中', '--date', 'not-a-date',
-      ]);
-      expect(exitCode).toBe(0);
-      expect(stdout).toContain('日期格式錯誤');
-    }, PER_TEST_TIMEOUT);
-
-    it('connections find surfaces date validation error from a bad --date', async () => {
-      const { stdout, exitCode } = await runCli([
-        'connections', 'find', '南港', '左營', '台中', '--date', '2025/12/31',
       ]);
       expect(exitCode).toBe(0);
       expect(stdout).toContain('日期格式錯誤');

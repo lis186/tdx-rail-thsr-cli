@@ -35,34 +35,16 @@ describe('CLI Integration', () => {
       expect(fareCmd).toBeDefined();
     });
 
-    it('should have operator command', () => {
-      const commands = cli.commands;
-      const operatorCmd = commands.find((cmd) => cmd.name() === 'operator');
-      expect(operatorCmd).toBeDefined();
-    });
-
     it('should have schedule command', () => {
       const commands = cli.commands;
       const scheduleCmd = commands.find((cmd) => cmd.name() === 'schedule');
       expect(scheduleCmd).toBeDefined();
     });
 
-    it('should have train-status command', () => {
-      const commands = cli.commands;
-      const trainStatusCmd = commands.find((cmd) => cmd.name() === 'train-status');
-      expect(trainStatusCmd).toBeDefined();
-    });
-
     it('should have seat-availability command', () => {
       const commands = cli.commands;
       const seatCmd = commands.find((cmd) => cmd.name() === 'seat-availability');
       expect(seatCmd).toBeDefined();
-    });
-
-    it('should have service-status command', () => {
-      const commands = cli.commands;
-      const serviceCmd = commands.find((cmd) => cmd.name() === 'service-status');
-      expect(serviceCmd).toBeDefined();
     });
 
     it('should have occupancy command', () => {
@@ -75,12 +57,6 @@ describe('CLI Integration', () => {
       const commands = cli.commands;
       const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
       expect(alertsCmd).toBeDefined();
-    });
-
-    it('should have connections command', () => {
-      const commands = cli.commands;
-      const connectionsCmd = commands.find((cmd) => cmd.name() === 'connections');
-      expect(connectionsCmd).toBeDefined();
     });
 
     it('should have journey-plan command', () => {
@@ -189,31 +165,6 @@ describe('CLI Integration', () => {
       const subcommands = alertsCmd?.commands || [];
       const summaryCmd = subcommands.find((cmd) => cmd.name() === 'summary');
       expect(summaryCmd).toBeDefined();
-    });
-  });
-
-  describe('Connections Command', () => {
-    it('should have subcommands', () => {
-      const commands = cli.commands;
-      const connectionsCmd = commands.find((cmd) => cmd.name() === 'connections');
-      const subcommands = connectionsCmd?.commands || [];
-      expect(subcommands.length).toBeGreaterThan(0);
-    });
-
-    it('should have find subcommand', () => {
-      const commands = cli.commands;
-      const connectionsCmd = commands.find((cmd) => cmd.name() === 'connections');
-      const subcommands = connectionsCmd?.commands || [];
-      const findCmd = subcommands.find((cmd) => cmd.name() === 'find');
-      expect(findCmd).toBeDefined();
-    });
-
-    it('should have quick subcommand', () => {
-      const commands = cli.commands;
-      const connectionsCmd = commands.find((cmd) => cmd.name() === 'connections');
-      const subcommands = connectionsCmd?.commands || [];
-      const quickCmd = subcommands.find((cmd) => cmd.name() === 'quick');
-      expect(quickCmd).toBeDefined();
     });
   });
 

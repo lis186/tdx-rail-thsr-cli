@@ -1,6 +1,6 @@
 /**
  * CLI Commands Phase 1 - Driven via commander parseAsync
- * Covers: stations, fare, schedule, train-status, journey-plan
+ * Covers: stations, fare, schedule, journey-plan
  *
  * Strategy: import the Command instance, call parseAsync with argv,
  * capture console output, assert behavior and key output fragments.
@@ -10,7 +10,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { stationsCommand } from '../src/commands/stations';
 import { fareCommand } from '../src/commands/fare';
 import { scheduleCommand } from '../src/commands/schedule';
-import { trainStatusCommand } from '../src/commands/train-status';
 import { journeyPlanCommand } from '../src/commands/journey-plan';
 
 const FIXTURE_DATE = '2025-12-31';
@@ -29,7 +28,7 @@ describe('CLI Commands Phase 1 (parseAsync)', () => {
   beforeEach(() => {
     logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     // Prevent commander from calling process.exit on errors
-    for (const cmd of [stationsCommand, fareCommand, scheduleCommand, trainStatusCommand, journeyPlanCommand]) {
+    for (const cmd of [stationsCommand, fareCommand, scheduleCommand, journeyPlanCommand]) {
       cmd.exitOverride();
       for (const sub of cmd.commands) sub.exitOverride();
     }
@@ -214,63 +213,6 @@ describe('CLI Commands Phase 1 (parseAsync)', () => {
     it('route subcommand rejects bad date', async () => {
       await scheduleCommand.parseAsync(argv('route', '南港', '左營', '--date', 'nope'));
       expect(joinOut(logSpy)).toContain('日期格式錯誤');
-    });
-  });
-
-  // ─── train-status ────────────────────────────────────────────
-  describe('train-status', () => {
-    it('default lists all train statuses', async () => {
-      await trainStatusCommand.parseAsync(argv());
-      const out = joinOut(logSpy);
-      expect(out).toContain('高鐵列車實時狀態');
-      expect(out).toMatch(/共 \d+ 班列車|沒有列車狀態資訊/);
-    });
-
-    it('train subcommand shows known train status', async () => {
-      await trainStatusCommand.parseAsync(argv('train', '601'));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/列車實時狀態|找不到列車/);
-      expect(out).toContain('601');
-    });
-
-    it('train subcommand reports unknown train', async () => {
-      await trainStatusCommand.parseAsync(argv('train', '99999'));
-      expect(joinOut(logSpy)).toContain('找不到列車');
-    });
-
-    it('station subcommand lists trains at a station', async () => {
-      await trainStatusCommand.parseAsync(argv('station', '板橋'));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/經過 板橋|找不到經過/);
-    });
-
-    it('station subcommand reports no trains', async () => {
-      await trainStatusCommand.parseAsync(argv('station', '無此站XYZ'));
-      expect(joinOut(logSpy)).toContain('找不到經過');
-    });
-
-    it('filter subcommand defaults to delayed status', async () => {
-      await trainStatusCommand.parseAsync(argv('filter'));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/列車狀態篩選結果|沒有符合篩選條件/);
-    });
-
-    it('filter subcommand supports --status Cancelled', async () => {
-      await trainStatusCommand.parseAsync(argv('filter', '--status', 'Cancelled'));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/列車狀態篩選結果|沒有符合篩選條件/);
-    });
-
-    it('filter subcommand supports --delay-greater-than', async () => {
-      await trainStatusCommand.parseAsync(argv('filter', '--delay-greater-than', '10'));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/列車狀態篩選結果|沒有符合篩選條件/);
-    });
-
-    it('filter subcommand falls back to all when status=OnTime', async () => {
-      await trainStatusCommand.parseAsync(argv('filter', '--status', 'OnTime', '--delay-greater-than', '0'));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/列車狀態篩選結果|沒有符合篩選條件/);
     });
   });
 

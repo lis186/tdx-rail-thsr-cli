@@ -99,10 +99,10 @@ describe('Build smoke tests', () => {
     expect(stdout).toContain('南港');
   }, 20_000);
 
-  it('node dist/index.js train-status train 601 runs', async () => {
-    const { stdout, exitCode } = await runNode(['train-status', 'train', '601']);
+  it('node dist/index.js fare 南港 左營 runs', async () => {
+    const { stdout, exitCode } = await runNode(['fare', '南港', '左營']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain('601');
-    expect(stdout).toContain('板橋');
+    expect(stdout).toContain('票價');
+    expect(stdout).toContain('NT$');
   }, 20_000);
 });
