@@ -24,8 +24,8 @@ async function handleTransfersCommand(
   to: string,
   options: {
     date: string;
-    'max-wait'?: string;
-    'prefer-short-wait'?: boolean;
+    maxWait?: string;
+    preferShortWait?: boolean;
     hub?: string;
   }
 ) {
@@ -37,7 +37,7 @@ async function handleTransfersCommand(
     return;
   }
 
-  const maxWait = parseInt(options['max-wait'] || '120', 10);
+  const maxWait = parseInt(options.maxWait || '120', 10);
 
   let transfers;
 
@@ -118,7 +118,7 @@ async function handleBestTransferCommand(
   from: string,
   to: string,
   options: {
-    'prefer-short-wait'?: boolean;
+    preferShortWait?: boolean;
   },
   command: Command,
 ) {
@@ -130,7 +130,7 @@ async function handleBestTransferCommand(
     return;
   }
 
-  const bestTransfer = resolver.findBestTransfer(from, to, date, options['prefer-short-wait']);
+  const bestTransfer = resolver.findBestTransfer(from, to, date, options.preferShortWait);
 
   if (!bestTransfer) {
     console.log(`\n❌ 找不到從 \"${from}\" 到 \"${to}\" 的轉運選項\n`);

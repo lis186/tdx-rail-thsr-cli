@@ -25,10 +25,10 @@ async function handleJourneyPlanCommand(
   to: string,
   options: {
     date: string;
-    'departure-time'?: string;
-    'arrival-time'?: string;
-    'allow-transfers'?: boolean;
-    'max-transfer-time'?: string;
+    departureTime?: string;
+    arrivalTime?: string;
+    allowTransfers?: boolean;
+    maxTransferTime?: string;
   }
 ) {
   const resolver = new JourneyPlanResolver(await loadSchedules(), await loadStations());
@@ -41,10 +41,10 @@ async function handleJourneyPlanCommand(
 
   const journey = resolver.planJourney(from, to, {
     date: options.date,
-    departureTime: options['departure-time'],
-    arrivalTime: options['arrival-time'],
-    allowTransfers: options['allow-transfers'],
-    maxTransferTime: parseInt(options['max-transfer-time'] || '30', 10),
+    departureTime: options.departureTime,
+    arrivalTime: options.arrivalTime,
+    allowTransfers: options.allowTransfers,
+    maxTransferTime: parseInt(options.maxTransferTime || '30', 10),
   });
 
   if (!journey) {
