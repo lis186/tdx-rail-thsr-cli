@@ -3,11 +3,11 @@
  * Analyzes multiple routing options and suggests best transfer points
  */
 
-import type { Transfer } from '../types/api.js';
+import type { Transfer, THSRSchedule, THSRStation } from '../types/api.js';
 import { ScheduleResolver } from './schedule-resolver.js';
 import { StationResolver } from './station-resolver.js';
-import thsrSchedules from '../data/schedules.js';
-import thsrStations from '../data/stations.js';
+import bundledSchedules from '../data/schedules.js';
+import bundledStations from '../data/stations.js';
 
 export interface TransferOption {
   fromStation: string;
@@ -27,9 +27,14 @@ export class TransfersResolver {
   private scheduleResolver: ScheduleResolver;
   private stationResolver: StationResolver;
 
-  constructor() {
-    this.scheduleResolver = new ScheduleResolver(thsrSchedules);
-    this.stationResolver = new StationResolver(thsrStations);
+  /**
+   * Both arguments default to bundled fixtures so existing tests and
+   * code paths that call `new TransfersResolver()` keep working.
+   * Production callers pass live data via the data-source loaders.
+   */
+  constructor(schedules: THSRSchedule[] = bundledSchedules, stations: THSRStation[] = bundledStations) {
+    this.scheduleResolver = new ScheduleResolver(schedules);
+    this.stationResolver = new StationResolver(stations);
   }
 
   /**

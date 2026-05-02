@@ -62,7 +62,7 @@ describe('E2E: Happy Path Workflows', () => {
     fareResolver = new FareResolver(thsrFares as THSRODFare[]);
     scheduleResolver = new ScheduleResolver(thsrSchedules as THSRSchedule[]);
     trainStatusResolver = new TrainStatusResolver(thsrTrainStatus as THSRTrainStatus[]);
-    journeyPlanResolver = new JourneyPlanResolver(stationResolver, scheduleResolver);
+    journeyPlanResolver = new JourneyPlanResolver();
     transfersResolver = new TransfersResolver();
     occupancyAnalyzer = new OccupancyAnalyzer(thsrAvailability as THSRAvailability[]);
     alertsResolver = new AlertsResolver();
@@ -355,7 +355,7 @@ describe('E2E: Error Scenarios & Graceful Degradation', () => {
     fareResolver = new FareResolver(thsrFares as THSRODFare[]);
     scheduleResolver = new ScheduleResolver(thsrSchedules as THSRSchedule[]);
     trainStatusResolver = new TrainStatusResolver(thsrTrainStatus as THSRTrainStatus[]);
-    journeyPlanResolver = new JourneyPlanResolver(stationResolver, scheduleResolver);
+    journeyPlanResolver = new JourneyPlanResolver();
   });
 
   describe('Invalid Station Names', () => {

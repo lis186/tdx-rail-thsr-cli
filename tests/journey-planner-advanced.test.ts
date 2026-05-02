@@ -25,7 +25,7 @@ describe('JourneyPlanner - Advanced Scenarios', () => {
   beforeAll(() => {
     stationResolver = new StationResolver(thsrStations as THSRStation[]);
     scheduleResolver = new ScheduleResolver(thsrSchedules as THSRSchedule[]);
-    journeyPlanner = new JourneyPlanResolver(stationResolver, scheduleResolver);
+    journeyPlanner = new JourneyPlanResolver();
   });
 
   describe('Early Departure Optimization', () => {

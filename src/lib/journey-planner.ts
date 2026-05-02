@@ -3,12 +3,12 @@
  * Supports departure/arrival time preferences and transfer optimization
  */
 
-import type { JourneyPlan, JourneyLeg } from '../types/api.js';
+import type { JourneyPlan, JourneyLeg, THSRSchedule, THSRStation } from '../types/api.js';
 import { ScheduleResolver } from './schedule-resolver.js';
 import { StationResolver } from './station-resolver.js';
 import type { ResolvedSchedule } from './schedule-resolver.js';
-import thsrSchedules from '../data/schedules.js';
-import thsrStations from '../data/stations.js';
+import bundledSchedules from '../data/schedules.js';
+import bundledStations from '../data/stations.js';
 
 export interface JourneyOptions {
   departureTime?: string; // HH:MM format
@@ -22,9 +22,14 @@ export class JourneyPlanResolver {
   private scheduleResolver: ScheduleResolver;
   private stationResolver: StationResolver;
 
-  constructor() {
-    this.scheduleResolver = new ScheduleResolver(thsrSchedules);
-    this.stationResolver = new StationResolver(thsrStations);
+  /**
+   * Both arguments default to bundled fixtures so existing tests and
+   * code paths that call `new JourneyPlanResolver()` keep working.
+   * Production callers pass live data via the data-source loaders.
+   */
+  constructor(schedules: THSRSchedule[] = bundledSchedules, stations: THSRStation[] = bundledStations) {
+    this.scheduleResolver = new ScheduleResolver(schedules);
+    this.stationResolver = new StationResolver(stations);
   }
 
   /**

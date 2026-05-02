@@ -6,6 +6,7 @@
 import { Command } from 'commander';
 import Table from 'cli-table3';
 import { JourneyPlanResolver } from '../lib/journey-planner.js';
+import { loadSchedules, loadStations } from '../services/data-source.js';
 
 export const journeyPlanCommand = new Command()
   .name('journey-plan')
@@ -30,7 +31,7 @@ async function handleJourneyPlanCommand(
     'max-transfer-time'?: string;
   }
 ) {
-  const resolver = new JourneyPlanResolver();
+  const resolver = new JourneyPlanResolver(await loadSchedules(), await loadStations());
 
   // Validate date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(options.date)) {
@@ -100,7 +101,7 @@ async function handleEarliestCommand(
   to: string,
   options: { date: string }
 ) {
-  const resolver = new JourneyPlanResolver();
+  const resolver = new JourneyPlanResolver(await loadSchedules(), await loadStations());
   const journey = resolver.findEarliestDeparture(from, to, options.date);
 
   if (!journey) {
@@ -129,7 +130,7 @@ async function handleLatestCommand(
   to: string,
   options: { date: string }
 ) {
-  const resolver = new JourneyPlanResolver();
+  const resolver = new JourneyPlanResolver(await loadSchedules(), await loadStations());
   const journey = resolver.findLatestArrival(from, to, options.date);
 
   if (!journey) {

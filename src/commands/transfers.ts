@@ -6,6 +6,7 @@
 import { Command } from 'commander';
 import Table from 'cli-table3';
 import { TransfersResolver } from '../lib/transfers-resolver.js';
+import { loadSchedules, loadStations } from '../services/data-source.js';
 
 export const transfersCommand = new Command()
   .name('transfers')
@@ -28,7 +29,7 @@ async function handleTransfersCommand(
     hub?: string;
   }
 ) {
-  const resolver = new TransfersResolver();
+  const resolver = new TransfersResolver(await loadSchedules(), await loadStations());
 
   // Validate date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(options.date)) {
@@ -121,7 +122,7 @@ async function handleBestTransferCommand(
   },
   command: Command,
 ) {
-  const resolver = new TransfersResolver();
+  const resolver = new TransfersResolver(await loadSchedules(), await loadStations());
   const date = command.optsWithGlobals().date as string;
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -174,7 +175,7 @@ async function handleCompareTransfersCommand(
   },
   command: Command,
 ) {
-  const resolver = new TransfersResolver();
+  const resolver = new TransfersResolver(await loadSchedules(), await loadStations());
   const date = command.optsWithGlobals().date as string;
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
