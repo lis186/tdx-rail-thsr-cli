@@ -7,7 +7,7 @@
 import { Command } from 'commander';
 import Table from 'cli-table3';
 import { ScheduleResolver } from '../lib/schedule-resolver.js';
-import thsrSchedules from '../data/schedules.js';
+import { loadSchedules } from '../services/data-source.js';
 
 export const scheduleCommand = new Command()
   .name('schedule')
@@ -16,7 +16,7 @@ export const scheduleCommand = new Command()
 
 async function handleScheduleCommand() {
   // Default action: show available dates and trains
-  const resolver = new ScheduleResolver(thsrSchedules);
+  const resolver = new ScheduleResolver(await loadSchedules());
   const dates = resolver.listDates();
   const trainNumbers = resolver.listTrainNumbers();
 
@@ -58,7 +58,7 @@ async function handleTrainCommand(
   trainNumber: string,
   options: { date?: string }
 ) {
-  const resolver = new ScheduleResolver(thsrSchedules);
+  const resolver = new ScheduleResolver(await loadSchedules());
   const availableDates = resolver.listDates();
   const queryDate = options.date || availableDates[0];
 
@@ -126,7 +126,7 @@ async function handleStationCommand(
   station: string,
   options: { date?: string }
 ) {
-  const resolver = new ScheduleResolver(thsrSchedules);
+  const resolver = new ScheduleResolver(await loadSchedules());
   const availableDates = resolver.listDates();
   const queryDate = options.date || availableDates[0];
 
@@ -193,7 +193,7 @@ async function handleRouteCommand(
   to: string,
   options: { date?: string }
 ) {
-  const resolver = new ScheduleResolver(thsrSchedules);
+  const resolver = new ScheduleResolver(await loadSchedules());
   const availableDates = resolver.listDates();
   const queryDate = options.date || availableDates[0];
 

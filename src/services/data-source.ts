@@ -20,6 +20,8 @@ import type {
 
 import bundledStations from '../data/stations.js';
 import bundledFares from '../data/fares.js';
+import bundledSchedules from '../data/schedules.js';
+import type { THSRSchedule } from '../types/api.js';
 
 function clientOrNull(): TDXApiClient | null {
   try {
@@ -69,9 +71,48 @@ export async function loadFares(): Promise<THSRODFare[]> {
 }
 
 /**
- * Daily timetable for today. No bundled fallback — this data is date-specific
- * and a stale fixture would be misleading. Returns [] when unreachable so
- * callers can render "no data" rather than crashing.
+ * Map TDX's live DailyTimetableEntry to the legacy THSRSchedule shape the
+ * resolvers were built around. Lets us swap the data source without
+ * rewriting every resolver and its tests.
+ */
+function dailyToSchedule(entries: DailyTimetableEntry[]): THSRSchedule[] {
+  return entries.map((e) => ({
+    TrainNumber: e.DailyTrainInfo.TrainNo,
+    Direction: e.DailyTrainInfo.Direction,
+    StartingStationID: e.DailyTrainInfo.StartingStationID,
+    StartingStationName: e.DailyTrainInfo.StartingStationName,
+    EndingStationID: e.DailyTrainInfo.EndingStationID,
+    EndingStationName: e.DailyTrainInfo.EndingStationName,
+    ScheduleDate: e.TrainDate,
+    StopTimes: e.StopTimes.map((s) => ({
+      StationID: s.StationID,
+      StationName: s.StationName,
+      ArrivalTime: s.ArrivalTime,
+      DepartureTime: s.DepartureTime,
+      StopSequence: s.StopSequence,
+    })),
+    OperatorID: 'THSR',
+    UpdateTime: e.UpdateTime,
+    VersionID: e.VersionID ?? 0,
+  }));
+}
+
+/**
+ * Today's schedule, mapped to the resolver-friendly THSRSchedule shape.
+ * Falls back to the bundled fixture when TDX is unreachable so the CLI
+ * keeps working offline (the fixture is a snapshot, not today's data —
+ * callers must accept potentially stale dates).
+ */
+export async function loadSchedules(): Promise<THSRSchedule[]> {
+  const live = await loadDailyTimetable();
+  if (live.length > 0) return dailyToSchedule(live);
+  return bundledSchedules;
+}
+
+/**
+ * Raw daily timetable for today. No bundled fallback — this data is
+ * date-specific and a stale fixture would be misleading. Returns [] when
+ * unreachable so callers can render "no data" rather than crashing.
  */
 export async function loadDailyTimetable(trainNo?: string): Promise<DailyTimetableEntry[]> {
   const cache = defaultCache();
