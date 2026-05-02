@@ -56,31 +56,28 @@ describe('CLI Commands Phase 3 (parseAsync)', () => {
 
   // ─── seat-availability ───────────────────────────────────────
   describe('seat-availability', () => {
-    it('default action lists availability for first date', async () => {
+    it('default action surfaces TDX-no-data message when offline', async () => {
       const cmd = await loadCommand('../src/commands/seat-availability', 'seatAvailabilityCommand');
       await cmd.parseAsync(fullArgv());
       const out = joinOut(logSpy);
-      expect(out).toMatch(/座位可用性|沒有座位可用性資訊/);
+      // Tests run with TDX env stripped (tests/setup.ts), so loadAvailableSeats
+      // returns an empty envelope and the command renders the no-data notice.
+      expect(out).toMatch(/TDX 無高鐵座位狀態公告/);
     });
 
-    it('train subcommand shows known train availability', async () => {
+    it('train subcommand reports no data when TDX is unreachable', async () => {
       const cmd = await loadCommand('../src/commands/seat-availability', 'seatAvailabilityCommand');
-      await cmd.parseAsync(fullArgv('train', '601'));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/列車 601 座位可用性|找不到列車/);
+      await cmd.parseAsync(fullArgv('train', '0601'));
+      expect(joinOut(logSpy)).toMatch(/TDX 無高鐵座位狀態公告/);
     });
+  });
 
-    it('train subcommand with explicit --date', async () => {
-      const cmd = await loadCommand('../src/commands/seat-availability', 'seatAvailabilityCommand');
-      await cmd.parseAsync(fullArgv('train', '601', '--date', FIXTURE_DATE));
-      const out = joinOut(logSpy);
-      expect(out).toMatch(/列車 601 座位可用性|找不到列車/);
-    });
-
-    it('train subcommand reports unknown train', async () => {
-      const cmd = await loadCommand('../src/commands/seat-availability', 'seatAvailabilityCommand');
-      await cmd.parseAsync(fullArgv('train', '99999'));
-      expect(joinOut(logSpy)).toContain('找不到列車');
+  // ─── news ────────────────────────────────────────────────────
+  describe('news', () => {
+    it('reports no data when TDX is unreachable', async () => {
+      const cmd = await loadCommand('../src/commands/news', 'newsCommand');
+      await cmd.parseAsync(fullArgv());
+      expect(joinOut(logSpy)).toMatch(/目前沒有可顯示的高鐵消息/);
     });
   });
 

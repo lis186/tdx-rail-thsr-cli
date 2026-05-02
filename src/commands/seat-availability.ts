@@ -1,105 +1,74 @@
 /**
  * Seat Availability Command
- * Query available seats on trains
+ * Wraps TDX /AvailableSeatStatusList/Today. THSR publishes this intermittently
+ * and the response is often empty; the command surfaces the raw records when
+ * present and explains the limitation when not.
  */
 
 import { Command } from 'commander';
 import Table from 'cli-table3';
-import { AvailabilityResolver } from '../lib/availability-resolver.js';
-import availabilityData from '../data/availability.js';
+import { loadAvailableSeats } from '../services/data-source.js';
+
+const NO_DATA = '\n📭 目前 TDX 無高鐵座位狀態公告（高鐵僅在特定情況下發布此資料）\n';
 
 export const seatAvailabilityCommand = new Command()
   .name('seat-availability')
-  .description('查詢高鐵座位可用性')
-  .action(handleSeatAvailabilityCommand);
+  .description('查詢高鐵當日座位狀態（依 TDX 公告）')
+  .action(async () => {
+    const envelope = await loadAvailableSeats();
+    const records = envelope.AvailableSeats ?? [];
+    if (records.length === 0) {
+      console.log(NO_DATA);
+      if (envelope.UpdateTime) console.log(`   TDX 更新時間: ${envelope.UpdateTime}\n`);
+      return;
+    }
 
-async function handleSeatAvailabilityCommand() {
-  const resolver = new AvailabilityResolver(availabilityData);
-  const dates = resolver.listDates();
+    console.log('\n🎫 高鐵座位狀態');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    if (envelope.UpdateTime) console.log(`更新時間: ${envelope.UpdateTime}`);
+    console.log(`共 ${records.length} 筆\n`);
 
-  if (dates.length === 0) {
-    console.log('\n❌ 沒有座位可用性資訊\n');
-    return;
-  }
-
-  const avails = resolver.getAvailabilitiesByDate(dates[0]);
-
-  if (avails.length === 0) {
-    console.log('\n❌ 沒有座位可用性資訊\n');
-    return;
-  }
-
-  console.log(`\n🎫 座位可用性 (${dates[0]})`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log();
-
-  const table = new Table({
-    head: ['列車', '路線', '標準艙', '商務艙'],
-    style: { head: [], border: ['cyan'] },
+    // Render whatever fields TDX hands us — the per-row schema isn't fixed.
+    const sample = records[0];
+    const columns = Object.keys(sample);
+    const table = new Table({
+      head: columns,
+      style: { head: [], border: ['cyan'] },
+    });
+    for (const r of records) {
+      table.push(columns.map((c) => String((r as Record<string, unknown>)[c] ?? '-')));
+    }
+    console.log(table.toString());
+    console.log();
   });
 
-  for (const avail of avails) {
-    const stdSeats = `${avail.standard.available}/${avail.standard.total}`;
-    const busSeats = `${avail.business.available}/${avail.business.total}`;
-    table.push([avail.trainNumber, `${avail.from}→${avail.to}`, stdSeats, busSeats]);
-  }
-
-  console.log(table.toString());
-  console.log();
-}
-
-// Create train subcommand
 const trainCommand = new Command()
   .name('train')
-  .description('查詢列車座位可用性')
-  .argument('<train-number>', '列車號碼')
-  .option('--date <date>', '查詢日期 (格式: YYYY-MM-DD)')
-  .action(handleTrainCommand);
+  .description('查詢特定列車座位狀態')
+  .argument('<train-number>', '列車號碼 (例: 0601)')
+  .action(async (trainNumber: string) => {
+    const envelope = await loadAvailableSeats();
+    const records = envelope.AvailableSeats ?? [];
+    if (records.length === 0) {
+      console.log(NO_DATA);
+      return;
+    }
+    const matches = records.filter(
+      (r) => 'TrainNo' in r && (r.TrainNo === trainNumber || r.TrainNo === trainNumber.padStart(4, '0')),
+    );
+    if (matches.length === 0) {
+      console.log(`\n❌ TDX 公告中找不到列車 ${trainNumber} 的座位狀態\n`);
+      return;
+    }
 
-async function handleTrainCommand(
-  trainNumber: string,
-  options: { date?: string }
-) {
-  const resolver = new AvailabilityResolver(availabilityData);
-  const dates = resolver.listDates();
-  const queryDate = options.date || dates[0];
+    console.log(`\n🎫 列車 ${trainNumber} 座位狀態`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    for (const r of matches) {
+      for (const [k, v] of Object.entries(r)) {
+        console.log(`${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`);
+      }
+      console.log();
+    }
+  });
 
-  if (!queryDate) {
-    console.log('\n❌ 沒有座位可用性資訊\n');
-    return;
-  }
-
-  const avail = resolver.getAvailability(trainNumber, queryDate);
-
-  if (!avail) {
-    console.log(`\n❌ 找不到列車 ${trainNumber} 的座位資訊\n`);
-    return;
-  }
-
-  console.log(`\n🎫 列車 ${trainNumber} 座位可用性`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`路線: ${avail.from} → ${avail.to}`);
-  console.log(`日期: ${avail.date}\n`);
-
-  // Standard seats
-  console.log('標準艙');
-  const stdPercent = Math.round(
-    ((avail.standard.total - avail.standard.available) / avail.standard.total) * 100
-  );
-  console.log(
-    `  可用座位: ${avail.standard.available}/${avail.standard.total} [${stdPercent}%已訂]`
-  );
-
-  // Business seats
-  console.log('\n商務艙');
-  const busPercent = Math.round(
-    ((avail.business.total - avail.business.available) / avail.business.total) * 100
-  );
-  console.log(
-    `  可用座位: ${avail.business.available}/${avail.business.total} [${busPercent}%已訂]`
-  );
-  console.log();
-}
-
-// Add subcommand
 seatAvailabilityCommand.addCommand(trainCommand);

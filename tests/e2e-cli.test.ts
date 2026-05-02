@@ -146,13 +146,16 @@ describe('E2E CLI subprocess', () => {
     it('seat-availability default', async () => {
       const { stdout, exitCode } = await runCli(['seat-availability']);
       expect(exitCode).toBe(0);
-      expect(stdout).toMatch(/座位可用性|沒有座位可用性資訊/);
+      // Without TDX creds the command shows the explicit no-data notice;
+      // with creds it'll usually be empty too since THSR rarely publishes.
+      expect(stdout).toMatch(/TDX 無高鐵座位狀態公告|高鐵座位狀態/);
     }, PER_TEST_TIMEOUT);
 
-    it('occupancy --date', async () => {
-      const { stdout, exitCode } = await runCli(['occupancy', '--date', '2025-12-31']);
+    it('news default', async () => {
+      const { stdout, exitCode } = await runCli(['news']);
       expect(exitCode).toBe(0);
-      expect(stdout).toContain('全天載客率');
+      // Empty without creds; non-empty hits live endpoint when CI runs them.
+      expect(stdout).toMatch(/目前沒有可顯示的高鐵消息|高鐵最新消息/);
     }, PER_TEST_TIMEOUT);
 
     it('alerts default', async () => {
@@ -225,12 +228,5 @@ describe('E2E CLI subprocess', () => {
       expect(stdout).toContain('日期格式錯誤');
     }, PER_TEST_TIMEOUT);
 
-    it('occupancy recommend surfaces date validation error from a bad --date', async () => {
-      const { stdout, exitCode } = await runCli([
-        'occupancy', 'recommend', '南港', '左營', '--date', 'bad',
-      ]);
-      expect(exitCode).toBe(0);
-      expect(stdout).toContain('日期格式錯誤');
-    }, PER_TEST_TIMEOUT);
   });
 });

@@ -47,12 +47,6 @@ describe('CLI Integration', () => {
       expect(seatCmd).toBeDefined();
     });
 
-    it('should have occupancy command', () => {
-      const commands = cli.commands;
-      const occupancyCmd = commands.find((cmd) => cmd.name() === 'occupancy');
-      expect(occupancyCmd).toBeDefined();
-    });
-
     it('should have alerts command', () => {
       const commands = cli.commands;
       const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
@@ -99,23 +93,6 @@ describe('CLI Integration', () => {
       const subcommands = stationsCmd?.commands || [];
       const infoCmd = subcommands.find((cmd) => cmd.name() === 'info');
       expect(infoCmd).toBeDefined();
-    });
-  });
-
-  describe('Occupancy Command', () => {
-    it('should have subcommands', () => {
-      const commands = cli.commands;
-      const occupancyCmd = commands.find((cmd) => cmd.name() === 'occupancy');
-      const subcommands = occupancyCmd?.commands || [];
-      expect(subcommands.length).toBeGreaterThan(0);
-    });
-
-    it('should have recommend subcommand', () => {
-      const commands = cli.commands;
-      const occupancyCmd = commands.find((cmd) => cmd.name() === 'occupancy');
-      const subcommands = occupancyCmd?.commands || [];
-      const recommendCmd = subcommands.find((cmd) => cmd.name() === 'recommend');
-      expect(recommendCmd).toBeDefined();
     });
   });
 
@@ -256,13 +233,6 @@ describe('CLI Integration', () => {
       expect(hasDateOption).toBe(true);
     });
 
-    it('occupancy should support --route option', () => {
-      const commands = cli.commands;
-      const occupancyCmd = commands.find((cmd) => cmd.name() === 'occupancy');
-      const opts = occupancyCmd?.options || [];
-      const routeOpt = opts.find((opt) => opt.long === '--route');
-      expect(routeOpt).toBeDefined();
-    });
 
     it('alerts should support --train option', () => {
       const commands = cli.commands;

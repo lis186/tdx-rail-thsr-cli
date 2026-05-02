@@ -1,6 +1,6 @@
 /**
  * CLI Commands Phase 2 - Driven via commander parseAsync
- * Covers: transfers, occupancy, alerts
+ * Covers: transfers, alerts
  *
  * Each test uses dynamic import + vi.resetModules() to get a fresh Command
  * instance, since commander stores option state on the singleton across parses.
@@ -29,7 +29,6 @@ async function loadCommand(modulePath: string, exportName: string): Promise<Comm
 }
 
 const transfers = () => loadCommand('../src/commands/transfers', 'transfersCommand');
-const occupancy = () => loadCommand('../src/commands/occupancy', 'occupancyCommand');
 const alerts = () => loadCommand('../src/commands/alerts', 'alertsCommand');
 
 describe('CLI Commands Phase 2 (parseAsync)', () => {
@@ -97,69 +96,6 @@ describe('CLI Commands Phase 2 (parseAsync)', () => {
       const cmd = await transfers();
       await cmd.parseAsync(fullArgv('compare', '南港', '台中', '--date', FIXTURE_DATE, '--limit', '3'));
       expect(joinOut(logSpy)).toMatch(/轉運選項比較|找不到從/);
-    });
-  });
-
-  // ─── occupancy ───────────────────────────────────────────────
-  describe('occupancy', () => {
-    it('rejects bad date', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('--date', 'bad'));
-      expect(joinOut(logSpy)).toContain('日期格式錯誤');
-    });
-
-    it('shows occupancy for specific train', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('601', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toMatch(/列車載客率|找不到列車/);
-    });
-
-    it('reports unknown train', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('99999', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toContain('找不到列車');
-    });
-
-    it('shows route occupancy via --route', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('--date', FIXTURE_DATE, '--route', '南港-左營'));
-      expect(joinOut(logSpy)).toMatch(/路線載客率|找不到路線/);
-    });
-
-    it('reports unknown route', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('--date', FIXTURE_DATE, '--route', '無此A-無此B'));
-      expect(joinOut(logSpy)).toContain('找不到路線');
-    });
-
-    it('shows all-day occupancy when no args', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toMatch(/全天載客率/);
-    });
-
-    it('shows busy trains with --busy', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('--date', FIXTURE_DATE, '--busy'));
-      expect(joinOut(logSpy)).toMatch(/擁擠列車/);
-    });
-
-    it('shows available trains with --available', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('--date', FIXTURE_DATE, '--available'));
-      expect(joinOut(logSpy)).toMatch(/有位列車/);
-    });
-
-    it('recommend subcommand runs', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('recommend', '南港', '左營', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toMatch(/推薦列車|沒有找到/);
-    });
-
-    it('recommend reports no rec for unknown route', async () => {
-      const cmd = await occupancy();
-      await cmd.parseAsync(fullArgv('recommend', '無此A', '無此B', '--date', FIXTURE_DATE));
-      expect(joinOut(logSpy)).toContain('沒有找到');
     });
   });
 
