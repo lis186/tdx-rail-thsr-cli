@@ -70,6 +70,73 @@ export interface FareInfo {
   };
 }
 
+// ─── Live TDX endpoint payloads ──────────────────────────────────
+
+export interface DailyTrainInfo {
+  TrainNo: string;
+  Direction: number;
+  StartingStationID: string;
+  StartingStationName: StationName;
+  EndingStationID: string;
+  EndingStationName: StationName;
+  Note?: Record<string, unknown>;
+}
+
+export interface DailyStopTime {
+  StopSequence: number;
+  StationID: string;
+  StationName: StationName;
+  ArrivalTime: string;
+  DepartureTime: string;
+}
+
+export interface DailyTimetableEntry {
+  TrainDate: string;
+  DailyTrainInfo: DailyTrainInfo;
+  StopTimes: DailyStopTime[];
+  UpdateTime: string;
+  VersionID?: number;
+}
+
+// /AvailableSeatStatusList/Today is wrapped in { AvailableSeats: [...] }.
+// The element shape varies and is sometimes empty when THSR isn't publishing.
+export interface AvailableSeatRecord {
+  TrainNo?: string;
+  AvailableSeatStatus?: number | string;
+  [key: string]: unknown;
+}
+
+export interface AvailableSeatsEnvelope {
+  AvailableSeats: AvailableSeatRecord[];
+  UpdateTime?: string;
+  SrcUpdateTime?: string;
+}
+
+export interface AlertInfoRecord {
+  AlertID: string;
+  Title: string;
+  Status: string;
+  StartTime: string;
+  PublishTime: string;
+  SrcUpdateTime: string;
+  UpdateTime: string;
+  Description?: string;
+}
+
+export interface NewsRecord {
+  NewsID: string;
+  Language: string;
+  NewsCategory: string;
+  Title: string;
+  Description: string;
+  NewsUrl: string;
+  AttachmentUrlList?: unknown[];
+  StartTime?: string;
+  EndTime?: string;
+  PublishTime?: string;
+  UpdateTime: string;
+}
+
 export interface Operator {
   OperatorID: string;
   OperatorCode: string;

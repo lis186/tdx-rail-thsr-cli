@@ -5,7 +5,14 @@
 
 import { $fetch, type FetchOptions } from 'ofetch';
 import { ConfigService } from './config.js';
-import type { THSRStation, THSRODFare } from '../types/api.js';
+import type {
+  THSRStation,
+  THSRODFare,
+  DailyTimetableEntry,
+  AvailableSeatsEnvelope,
+  AlertInfoRecord,
+  NewsRecord,
+} from '../types/api.js';
 
 export interface TokenResponse {
   access_token: string;
@@ -87,6 +94,66 @@ export class TDXApiClient {
     );
 
     return response;
+  }
+
+  /**
+   * Fetch today's daily timetable (all trains).
+   */
+  async getDailyTimetableToday(): Promise<DailyTimetableEntry[]> {
+    const token = await this.getAccessToken();
+    return $fetch<DailyTimetableEntry[]>(
+      `${this.baseUrl}/v2/Rail/THSR/DailyTimetable/Today?$format=JSON`,
+      { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } },
+    );
+  }
+
+  /**
+   * Fetch today's daily timetable for a single train.
+   * TrainNo must match TDX format (e.g. '0601', not '601').
+   */
+  async getDailyTimetableByTrainNo(trainNo: string): Promise<DailyTimetableEntry[]> {
+    const token = await this.getAccessToken();
+    return $fetch<DailyTimetableEntry[]>(
+      `${this.baseUrl}/v2/Rail/THSR/DailyTimetable/Today/TrainNo/${encodeURIComponent(trainNo)}?$format=JSON`,
+      { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } },
+    );
+  }
+
+  /**
+   * Fetch available seat status. Wrapped in { AvailableSeats: [...] }.
+   * THSR often returns an empty array when not actively publishing — callers
+   * should treat empty as "no current data" rather than an error.
+   */
+  async getAvailableSeats(): Promise<AvailableSeatsEnvelope> {
+    const token = await this.getAccessToken();
+    return $fetch<AvailableSeatsEnvelope>(
+      `${this.baseUrl}/v2/Rail/THSR/AvailableSeatStatusList/Today?$format=JSON`,
+      { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } },
+    );
+  }
+
+  /**
+   * Fetch active alerts. Each record is announcement-shaped (Title, Status,
+   * timestamps) — no per-train delay/cancellation breakdown is exposed.
+   */
+  async getAlertInfo(): Promise<AlertInfoRecord[]> {
+    const token = await this.getAccessToken();
+    return $fetch<AlertInfoRecord[]>(
+      `${this.baseUrl}/v2/Rail/THSR/AlertInfo?$format=JSON`,
+      { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } },
+    );
+  }
+
+  /**
+   * Fetch news / announcements (HTML descriptions).
+   */
+  async getNews(top?: number): Promise<NewsRecord[]> {
+    const token = await this.getAccessToken();
+    const topQuery = top ? `&$top=${top}` : '';
+    return $fetch<NewsRecord[]>(
+      `${this.baseUrl}/v2/Rail/THSR/News?$format=JSON${topQuery}`,
+      { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } },
+    );
   }
 
   /**
