@@ -161,13 +161,7 @@ describe('E2E CLI subprocess', () => {
     it('alerts default', async () => {
       const { stdout, exitCode } = await runCli(['alerts']);
       expect(exitCode).toBe(0);
-      expect(stdout).toContain('列車實時警報');
-    }, PER_TEST_TIMEOUT);
-
-    it('alerts summary', async () => {
-      const { stdout, exitCode } = await runCli(['alerts', 'summary']);
-      expect(exitCode).toBe(0);
-      expect(stdout).toContain('警報統計摘要');
+      expect(stdout).toContain('高鐵警報公告');
     }, PER_TEST_TIMEOUT);
 
     it('transfers 南港 台中', async () => {

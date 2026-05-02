@@ -101,70 +101,18 @@ describe('CLI Commands Phase 2 (parseAsync)', () => {
 
   // ─── alerts ──────────────────────────────────────────────────
   describe('alerts', () => {
-    it('default action shows alerts list', async () => {
+    it('default action shows TDX alert list header even when empty', async () => {
       const cmd = await alerts();
       await cmd.parseAsync(fullArgv());
       const out = joinOut(logSpy);
-      expect(out).toContain('列車實時警報');
-      expect(out).toMatch(/總警報數|沒有活動警報/);
+      expect(out).toContain('高鐵警報公告');
+      expect(out).toMatch(/共 \d+ 則|目前無 TDX 警報公告/);
     });
 
-    it('honors --train filter', async () => {
+    it('honors --status filter', async () => {
       const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('--train', '602'));
-      expect(joinOut(logSpy)).toContain('列車實時警報');
-    });
-
-    it('honors --type filter', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('--type', 'Delay'));
-      expect(joinOut(logSpy)).toContain('列車實時警報');
-    });
-
-    it('honors --severity filter', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('--severity', 'Warning'));
-      expect(joinOut(logSpy)).toContain('列車實時警報');
-    });
-
-    it('critical subcommand', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('critical'));
-      expect(joinOut(logSpy)).toContain('緊急警報');
-    });
-
-    it('delays subcommand', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('delays'));
-      expect(joinOut(logSpy)).toContain('列車延誤警報');
-    });
-
-    it('delays subcommand with --min-delay', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('delays', '--min-delay', '60'));
-      expect(joinOut(logSpy)).toContain('列車延誤警報');
-    });
-
-    it('cancellations subcommand', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('cancellations'));
-      expect(joinOut(logSpy)).toContain('列車取消警報');
-    });
-
-    it('occupancy subcommand', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('occupancy'));
-      expect(joinOut(logSpy)).toContain('列車載客率警報');
-    });
-
-    it('summary subcommand', async () => {
-      const cmd = await alerts();
-      await cmd.parseAsync(fullArgv('summary'));
-      const out = joinOut(logSpy);
-      expect(out).toContain('警報統計摘要');
-      expect(out).toContain('整體統計');
-      expect(out).toContain('按級別分類');
-      expect(out).toContain('按類型分類');
+      await cmd.parseAsync(fullArgv('--status', 'Normal'));
+      expect(joinOut(logSpy)).toContain('高鐵警報公告');
     });
   });
 

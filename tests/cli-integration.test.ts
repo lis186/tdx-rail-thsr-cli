@@ -97,51 +97,12 @@ describe('CLI Integration', () => {
   });
 
   describe('Alerts Command', () => {
-    it('should have multiple subcommands', () => {
+    it('exposes a --status option (no subcommands)', () => {
       const commands = cli.commands;
       const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
-      const subcommands = alertsCmd?.commands || [];
-      expect(subcommands.length).toBeGreaterThanOrEqual(5);
-    });
-
-    it('should have critical subcommand', () => {
-      const commands = cli.commands;
-      const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
-      const subcommands = alertsCmd?.commands || [];
-      const criticalCmd = subcommands.find((cmd) => cmd.name() === 'critical');
-      expect(criticalCmd).toBeDefined();
-    });
-
-    it('should have delays subcommand', () => {
-      const commands = cli.commands;
-      const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
-      const subcommands = alertsCmd?.commands || [];
-      const delaysCmd = subcommands.find((cmd) => cmd.name() === 'delays');
-      expect(delaysCmd).toBeDefined();
-    });
-
-    it('should have cancellations subcommand', () => {
-      const commands = cli.commands;
-      const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
-      const subcommands = alertsCmd?.commands || [];
-      const cancelCmd = subcommands.find((cmd) => cmd.name() === 'cancellations');
-      expect(cancelCmd).toBeDefined();
-    });
-
-    it('should have occupancy subcommand', () => {
-      const commands = cli.commands;
-      const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
-      const subcommands = alertsCmd?.commands || [];
-      const occupancyCmd = subcommands.find((cmd) => cmd.name() === 'occupancy');
-      expect(occupancyCmd).toBeDefined();
-    });
-
-    it('should have summary subcommand', () => {
-      const commands = cli.commands;
-      const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
-      const subcommands = alertsCmd?.commands || [];
-      const summaryCmd = subcommands.find((cmd) => cmd.name() === 'summary');
-      expect(summaryCmd).toBeDefined();
+      const opts = alertsCmd?.options || [];
+      expect(opts.some((o) => o.long === '--status')).toBe(true);
+      expect((alertsCmd?.commands || []).length).toBe(0);
     });
   });
 
@@ -234,13 +195,6 @@ describe('CLI Integration', () => {
     });
 
 
-    it('alerts should support --train option', () => {
-      const commands = cli.commands;
-      const alertsCmd = commands.find((cmd) => cmd.name() === 'alerts');
-      const opts = alertsCmd?.options || [];
-      const trainOpt = opts.find((opt) => opt.long === '--train');
-      expect(trainOpt).toBeDefined();
-    });
 
     it('journey-plan should support --departure-time option', () => {
       const commands = cli.commands;
