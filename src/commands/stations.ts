@@ -8,7 +8,7 @@ import { Command } from 'commander';
 import Table from 'cli-table3';
 import { StationResolver } from '../lib/station-resolver.js';
 import type { ODataOptions } from '../lib/odata-utils.js';
-import thsrStations from '../data/stations.js';
+import { loadStations } from '../services/data-source.js';
 
 export const stationsCommand = new Command()
   .name('stations')
@@ -33,7 +33,7 @@ async function handleStationsCommand(
     radius?: string;
   }
 ) {
-  const resolver = new StationResolver(thsrStations);
+  const resolver = new StationResolver(await loadStations());
 
   let stations: (import('../types/api.js').THSRStation | Record<string, unknown>)[];
 
@@ -115,7 +115,7 @@ const searchCommand = new Command()
   .action(handleSearchCommand);
 
 async function handleSearchCommand(query: string) {
-  const resolver = new StationResolver(thsrStations);
+  const resolver = new StationResolver(await loadStations());
   const results = resolver.searchStations(query);
 
   if (results.length === 0) {
@@ -149,7 +149,7 @@ const infoCommand = new Command()
   .action(handleInfoCommand);
 
 async function handleInfoCommand(stationQuery: string) {
-  const resolver = new StationResolver(thsrStations);
+  const resolver = new StationResolver(await loadStations());
   const station = resolver.resolveStation(stationQuery);
 
   if (!station) {

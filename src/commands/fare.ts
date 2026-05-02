@@ -8,7 +8,7 @@ import { Command } from 'commander';
 import Table from 'cli-table3';
 import { FareResolver } from '../lib/fare-resolver.js';
 import type { ODataOptions } from '../lib/odata-utils.js';
-import thsrFares from '../data/fares.js';
+import { loadFares, loadStations } from '../services/data-source.js';
 
 export const fareCommand = new Command()
   .name('fare')
@@ -23,7 +23,7 @@ async function handleFareCommand(
   to: string,
   options: { date?: string }
 ) {
-  const resolver = new FareResolver(thsrFares);
+  const resolver = new FareResolver(await loadFares());
   let fare;
 
   if (options.date) {
@@ -92,7 +92,7 @@ async function handleListCommand(
     skip?: string;
   }
 ) {
-  const resolver = new FareResolver(thsrFares);
+  const resolver = new FareResolver(await loadFares());
 
   // Build OData options
   const odataOptions: ODataOptions = {
@@ -158,10 +158,9 @@ async function handleRoutesCommand(
   station: string,
   options: { from?: boolean; to?: boolean }
 ) {
-  const resolver = new FareResolver(thsrFares);
+  const resolver = new FareResolver(await loadFares());
   const { StationResolver } = await import('../lib/station-resolver.js');
-  const stationsData = (await import('../data/stations.js')).default;
-  const stationResolver = new StationResolver(stationsData);
+  const stationResolver = new StationResolver(await loadStations());
 
   const stationData = stationResolver.resolveStation(station);
   if (!stationData) {
